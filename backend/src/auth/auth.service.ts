@@ -69,66 +69,8 @@ export class AuthService implements OnModuleInit {
   }
 
   async onModuleInit() {
-    await this.seedPlatformHeads();
+    // Database seeding is disabled. Fetching, updating, and inserting data from the database only.
   }
-
-  private async seedPlatformHeads() {
-    const platformHeads = [
-      { userId: 'PLT001', email: 'godfrey.cs23@krct.ac.in', firstName: 'Godfrey', lastName: 'T R' },
-      { userId: 'PLT002', email: 'grishnarayanan.cs23@krct.ac.in', firstName: 'Grishnarayanan', lastName: 'G' },
-      { userId: 'PLT003', email: 'girijesh.cs23@krct.ac.in', firstName: 'Girijesh', lastName: 'S' },
-    ];
-
-    const hashedPassword = await bcrypt.hash('FenceIN@PLTHead', 10);
-
-    // Ensure the PLATFORM tenant exists to satisfy foreign key constraints
-    const platformTenant = await this.prisma.tenant.findUnique({
-      where: { id: 'PLATFORM' },
-    });
-
-    if (!platformTenant) {
-      await this.prisma.tenant.create({
-        data: {
-          id: 'PLATFORM',
-          name: 'PLATFORM',
-          slug: 'platform',
-          organizationCode: 'PLATFORM',
-          plan: 'ENTERPRISE',
-          companyEmail: 'platform@fencein.gov',
-        },
-      });
-      console.log(`[Auth] Seeded Platform Tenant`);
-    }
-
-    for (const ph of platformHeads) {
-      const existing = await this.prisma.user.findUnique({
-        where: { email: ph.email },
-      });
-
-      if (!existing) {
-        await this.prisma.user.create({
-          data: {
-            user_id: ph.userId,
-            email: ph.email,
-            password: hashedPassword,
-            firstName: ph.firstName,
-            lastName: ph.lastName,
-            userRole: 'PLATFORM_HEAD',
-            roleLevel: -1,
-            tenantId: 'PLATFORM',
-            tenantName: 'PLATFORM',
-            state: 'ACTIVE',
-            faceRegistered: false,
-            fingerprintRegistered: false,
-            biometricEnrolled: false,
-            biometricPending: false,
-          },
-        });
-        console.log(`[Auth] Seeded Platform Head: ${ph.email}`);
-      }
-    }
-  }
-
   private encrypt(text: string): string {
     const cipher = crypto.createCipheriv(this.algorithm, this.secretKey, this.iv);
     let encrypted = cipher.update(text, 'utf8', 'hex');
@@ -277,7 +219,7 @@ export class AuthService implements OnModuleInit {
       const resolved = pythonRes.embedding;
       resolvedEmbedding = resolved;
       console.log(`[Auth] Face embedding successfully extracted from Python. Liveness Score: ${pythonRes.liveness_score}`);
-      
+
       const vectorString = `[${resolved.join(',')}]`;
       // BIOMETRIC SECURITY RULE: Face duplicate checks must ONLY search within the target tenant context
       const duplicateFace: any[] = await this.prisma.$queryRawUnsafe(`
@@ -303,11 +245,11 @@ export class AuthService implements OnModuleInit {
       if (!pythonRes || !pythonRes.success || !pythonRes.serialized_template) {
         throw new BadRequestException('Fingerprint registration failed: Low print contrast, scanner noise, or engine offline.');
       }
-      
+
       encryptedFingerprint = this.encrypt(pythonRes.serialized_template.trim());
       // BIOMETRIC SECURITY RULE: Fingerprint duplicate checks must ONLY search within the target tenant context
       const duplicateFingerprint = await this.prisma.user.findFirst({
-        where: { 
+        where: {
           fingerprintTemplate: encryptedFingerprint,
           tenantId: resolvedTenantId
         }
@@ -348,8 +290,8 @@ export class AuthService implements OnModuleInit {
     if (resolvedEmbedding) {
       const vectorString = `[${resolvedEmbedding.join(',')}]`;
       await this.prisma.$executeRawUnsafe(
-        `UPDATE users SET "faceEmbedding" = $1::vector WHERE id = $2`, 
-        vectorString, 
+        `UPDATE users SET "faceEmbedding" = $1::vector WHERE id = $2`,
+        vectorString,
         user.id
       );
     }
@@ -731,7 +673,7 @@ export class AuthService implements OnModuleInit {
       // 5. Create Super Admin User
       const tempPasswordStr = 'FenceIN@TempPass123';
       const hashedPassword = await bcrypt.hash(tempPasswordStr, 10);
-      
+
       const names = request.contactName.trim().split(/\s+/);
       const firstName = names[0] || 'Super';
       const lastName = names.slice(1).join(' ') || 'Admin';
@@ -832,18 +774,18 @@ export class AuthService implements OnModuleInit {
     try {
       // Aggregate verification and active sessions from MongoDB
       const logs = await this.mongo.getAuditLogs(null, undefined, 1000);
-      const logins = logs.filter(l => 
-        l.action === 'CREDENTIALS_VALIDATION_SUCCESS' || 
-        l.action === 'ENROLLMENT_LOGIN' || 
-        l.action === 'BIOMETRIC_FACE_VERIFICATION_SUCCESS' || 
+      const logins = logs.filter(l =>
+        l.action === 'CREDENTIALS_VALIDATION_SUCCESS' ||
+        l.action === 'ENROLLMENT_LOGIN' ||
+        l.action === 'BIOMETRIC_FACE_VERIFICATION_SUCCESS' ||
         l.action === 'BIOMETRIC_FINGERPRINT_VERIFICATION_SUCCESS'
       );
       activeSessionsCount = Array.from(new Set(logins.map(l => l.userId).filter(Boolean))).length;
-      
-      const matches = logs.filter(l => 
-        l.action === 'BIOMETRIC_MATCH_SUCCESS' || 
-        l.action === 'FACE_VERIFICATION_SUCCESS' || 
-        l.action === 'BIOMETRIC_FACE_VERIFICATION_SUCCESS' || 
+
+      const matches = logs.filter(l =>
+        l.action === 'BIOMETRIC_MATCH_SUCCESS' ||
+        l.action === 'FACE_VERIFICATION_SUCCESS' ||
+        l.action === 'BIOMETRIC_FACE_VERIFICATION_SUCCESS' ||
         l.action === 'BIOMETRIC_FINGERPRINT_VERIFICATION_SUCCESS'
       );
       biometricVerificationsCount = matches.length;

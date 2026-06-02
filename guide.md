@@ -5,7 +5,7 @@ Based on your project structure, the recommended approach is:
 - **Frontend** (Vite/React) -> **Netlify**
 - **Backend** (NestJS) -> **Render** (Web Service)
 - **Biometrics Service** (Python) -> **Render** (Web Service)
-- **Database** (PostgreSQL) -> **Render** (PostgreSQL Database)
+- **Database** (PostgreSQL) -> **Supabase** (With pgvector support)
 
 ---
 
@@ -14,16 +14,23 @@ Based on your project structure, the recommended approach is:
 1. Create a [GitHub](https://github.com/) repository and push your entire `Faceshield` project to it.
 2. Create an account on [Render](https://render.com/).
 3. Create an account on [Netlify](https://www.netlify.com/).
+4. Create a project on [Supabase](https://supabase.com/).
 
 ---
 
-## 2. Database Deployment (Render)
+## 2. Database Configuration (Supabase)
 
-1. Go to your **Render Dashboard** and click **New +** -> **PostgreSQL**.
-2. Give your database a name (e.g., `faceshield-db`).
-3. Select your preferred region and tier (Free tier is available).
-4. Click **Create Database**.
-5. Once created, scroll down to the **Connections** section and copy the **Internal Database URL** and **External Database URL**. You will need these for the backend.
+The Faceshield system uses the **`pgvector`** extension in PostgreSQL to store and match facial biometrics. Supabase supports this natively.
+
+1. Go to your **Supabase Dashboard** and open your project.
+2. Navigate to **Project Settings** (gear icon) -> **Database**.
+3. Scroll down to the **Connection pooling** section.
+4. Set **Pool Mode** to **Session** (uses port `5432`). 
+   > [!IMPORTANT]
+   > Do **NOT** use the direct connection string (which resolves to IPv6) as Render free-tier environments are IPv4-only and will fail with `ENETUNREACH`. The Connection Pooler in Session Mode is IPv4-compatible and supports standard operations and schema migrations.
+5. Copy the pooler **URI** connection string. It will look like:
+   `postgres://postgres.[ref]:[password]@aws-0-[region].pooler.supabase.com:5432/postgres`
+6. Keep this connection string ready; you will use it as the `DATABASE_URL` in your backend deployment.
 
 ---
 
@@ -38,10 +45,10 @@ The backend is a Node.js/NestJS application using Prisma.
    - **Root Directory**: `backend`
    - **Environment**: `Node`
    - **Build Command**: `npm install && npx prisma generate && npm run build`
-   - **Start Command**: `npm run start:prod` (or `node dist/main.js`)
+   - **Start Command**: `node dist/src/main.js`
 4. Scroll down to **Environment Variables** and add:
-   - `DATABASE_URL`: Paste the **Internal Database URL** you copied earlier.
-   - Add any other secrets from your local `backend/.env` file.
+   - `DATABASE_URL`: Paste the **Supabase Session Pooler URL** you copied in the previous step (make sure to replace `[password]` with your database password).
+   - Add any other secrets from your local `backend/.env` file (e.g. `JWT_SECRET`, `BIOMETRICS_SERVICE_URL`).
 5. Click **Create Web Service**.
 6. Once deployed, Render will provide a URL (e.g., `https://faceshield-backend.onrender.com`). **Save this URL**.
 
@@ -58,10 +65,12 @@ The biometrics service is a Python application.
    - **Root Directory**: `biometrics_service`
    - **Environment**: `Python`
    - **Build Command**: `pip install -r requirements.txt`
-   - **Start Command**: `gunicorn app:app` (or `uvicorn app:app --host 0.0.0.0 --port $PORT` depending on your framework).
-4. Scroll down to **Environment Variables** and add any necessary keys from your `biometrics_service/.env`.
+   - **Start Command**: `uvicorn app:app --host 0.0.0.0 --port $PORT`
+4. Scroll down to **Environment Variables** and add:
+   - `DATABASE_URL`: Paste the same **Supabase Session Pooler URL**.
+   - Add any necessary keys from your local `biometrics_service/.env`.
 5. Click **Create Web Service**.
-6. Once deployed, note down the URL. Ensure the NestJS backend's environment variables are updated with this new URL if it needs to communicate with the biometrics service.
+6. Once deployed, note down the URL. Ensure the NestJS backend's environment variables are updated with this new URL (`BIOMETRICS_SERVICE_URL`) so they can communicate.
 
 ---
 
@@ -86,6 +95,10 @@ The frontend is a Vite application.
 
 ## Post-Deployment Checklist
 
-- [ ] **Run Migrations**: If your database is empty, you may need to run `npx prisma db push` or `npx prisma migrate deploy`. You can do this by using the Render Shell in your backend web service, or locally by replacing the `DATABASE_URL` in your `.env` with the **External Database URL** and running the migration locally.
+- [ ] **Run Migrations**: The backend runs in Session Mode over port `5432`, which allows direct DDL execution. You can push your database schema from your local terminal using:
+  ```bash
+  npx prisma db push
+  ```
+  *(Ensure your local `.env` has your database URL configured before running this).*
 - [ ] **CORS**: Ensure your NestJS backend allows Cross-Origin requests (CORS) from your new Netlify frontend URL.
 - [ ] **Custom Domains**: You can add custom domains in both Netlify (for frontend) and Render (for backend/biometrics) through their respective settings panels.
