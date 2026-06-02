@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useAuthStore } from '@/store/useAuthStore';
 import { ShieldCheck, Search, Wifi, Activity, Sun, Moon } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 import { useTheme } from '../ThemeContext';
 import { useSocket } from '../SocketContext';
 
@@ -10,6 +11,7 @@ interface TopHUDProps {
 
 export default function TopHUD({ onSearchClick }: TopHUDProps) {
   const { user } = useAuthStore();
+  const { t } = useTranslation();
   const { theme, toggleTheme } = useTheme();
   const { connectionStatus } = useSocket();
   const [time, setTime] = useState(new Date());
@@ -75,8 +77,7 @@ export default function TopHUD({ onSearchClick }: TopHUDProps) {
         className="flex items-center space-x-2 px-6 py-1.5 rounded-full bg-black/10 hover:bg-black/20 border border-[var(--color-border-primary)]/10 hover:border-[var(--color-border-primary)]/30 text-xs text-text-muted transition-all duration-300 w-1/3 max-w-[280px] justify-between group shadow-inner cursor-pointer"
         title="Open Holographic Command Center"
       >
-        {/* eslint-disable-next-line i18next/no-literal-string */}
-        <span className="font-mono tracking-wide group-hover:text-text-primary transition-colors">SEARCH CORE CONSOLE</span>
+        <span className="font-mono tracking-wide group-hover:text-text-primary transition-colors">{t('hud.searchConsole', 'SEARCH CORE CONSOLE')}</span>
         <div className="flex items-center space-x-1">
           <span className="text-[9px] bg-[var(--color-bg-tertiary)]/20 px-1.5 py-0.5 rounded border border-[var(--color-border-primary)]/20 font-bold font-mono">⌘K</span>
           <Search className="w-3.5 h-3.5 text-brand-400 group-hover:scale-110 transition-transform" />
@@ -86,8 +87,7 @@ export default function TopHUD({ onSearchClick }: TopHUDProps) {
       {/* Live System Time & Operator ID */}
       <div className="flex items-center space-x-4">
         <div className="hidden sm:flex flex-col text-right font-mono">
-          {/* eslint-disable-next-line i18next/no-literal-string */}
-          <span className="text-[9px] opacity-50 uppercase tracking-widest">OPERATOR SCOPE</span>
+          <span className="text-[9px] opacity-50 uppercase tracking-widest">{t('hud.operatorScope', 'OPERATOR SCOPE')}</span>
           <span className={`text-[10px] font-black uppercase tracking-wider ${
             theme === 'dark' ? 'text-brand-400' : 'text-emerald-600'
           }`}>
