@@ -1,6 +1,6 @@
 import { useAuthStore } from '@/store/useAuthStore';
 
-const BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:3456';
+const BASE_URL = import.meta.env.VITE_API_URL || 'https://faceshield-edgeai-backend.onrender.com/api/v1';
 
 async function request(url: string, method: string, data?: any, config?: any) {
   const token = useAuthStore.getState().token;
