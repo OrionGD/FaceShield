@@ -1,0 +1,181 @@
+import { Controller, Get, Post, Body, Param, NotFoundException, UseGuards, Req } from '@nestjs/common';
+import { PrismaService } from '../prisma/prisma.service';
+import * as bcrypt from 'bcrypt';
+import { Role, WorkerState } from '@prisma/client';
+import * as crypto from 'crypto';
+import { JwtAuthGuard } from '../auth/jwt-auth.guard';
+import { RolesGuard } from '../auth/roles.guard';
+import { Roles } from '../auth/roles.decorator';
+import { TenantGuard } from '../auth/tenant.guard';
+import { tenantScope } from '../common/utils/tenant-scope';
+
+@Controller('worker-requests')
+@UseGuards(JwtAuthGuard, TenantGuard, RolesGuard)
+export class WorkerRequestsController {
+  constructor(private prisma: PrismaService) {}
+
+  @Roles(Role.SUPER_ADMIN, Role.ORG_ADMIN, Role.HR_ADMIN, Role.VENDOR_MANAGER)
+  @Post('register')
+  async register(@Body() dto: any) {
+    const {
+      firstName,
+      lastName,
+      phone,
+      emergencyContact,
+      govId,
+      vendorId,
+      skillType,
+      shiftId,
+      siteId,
+      address,
+      bloodGroup
+    } = dto;
+
+    // 1. Resolve Vendor
+    const vendor = await this.prisma.vendor.findUnique({
+      where: { id: vendorId },
+    });
+
+    if (!vendor) {
+      throw new NotFoundException('Vendor not found.');
+    }
+
+    // 2. Generate Predefined Corporate Email Format
+    const cleanVendorName = vendor.companyName.toLowerCase().replace(/[^a-z0-9]/g, '');
+    const baseEmail = `${firstName.toLowerCase()}.${lastName.toLowerCase()}@${cleanVendorName}.fencein.app`;
+    
+    // Deduplicate email if collision occurs
+    let finalEmail = baseEmail;
+    let collisionCheck = await this.prisma.user.findUnique({ where: { email: finalEmail } });
+    let counter = 1;
+    while (collisionCheck) {
+      finalEmail = `${firstName.toLowerCase()}.${lastName.toLowerCase()}${counter}@${cleanVendorName}.fencein.app`;
+      collisionCheck = await this.prisma.user.findUnique({ where: { email: finalEmail } });
+      counter++;
+    }
+
+    // 3. Assign Constant Temporary Password & Hash it
+    const tempPassword = 'Temp@FenceIn2026';
+    const hashedPassword = await bcrypt.hash(tempPassword, 10);
+
+    // 4. Save newly registered worker in database
+    const resolvedTenantId = vendor.tenantId || 'ORG001';
+    let resolvedTenantName = 'SHIELD';
+    if (vendor.tenantId) {
+      const tenant = await this.prisma.tenant.findUnique({
+        where: { id: vendor.tenantId },
+        select: { name: true }
+      });
+      if (tenant) {
+        resolvedTenantName = tenant.name;
+      }
+    }
+    const customUserId = `USR_${crypto.randomBytes(6).toString('hex').toUpperCase()}`;
+
+    const newWorker = await this.prisma.user.create({
+      data: {
+        email: finalEmail,
+        password: hashedPassword,
+        firstName,
+        lastName,
+        userRole: 'WORKER',
+        roleLevel: 6,
+        user_id: customUserId,
+        tenantId: resolvedTenantId,
+        tenantName: resolvedTenantName,
+        state: 'INVITED', // Pending Face Enrollment
+        mustChangePassword: true,   // Required to change password upon first login
+        vendorId,
+        phone,
+        govId,
+        bloodGroup,
+        address,
+        skillType,
+        shiftId,
+      }
+    });
+
+    // 5. Generate Dynamic QR Code URL for Onboarding
+    const qrCodeUrl = `https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${newWorker.id}`;
+
+    return {
+      success: true,
+      data: {
+        workerRequestId: newWorker.id,
+        qrCodeUrl,
+        email: finalEmail,
+        tempPassword
+      }
+    };
+  }
+
+  @Get('pending')
+  async getPending(@Req() req: any) {
+    const tenantId = tenantScope(req.user).tenantId;
+
+    // Note: faceEmbedding is an Unsupported vector type — cannot use in where clause
+    const pendingWorkers = await this.prisma.user.findMany({
+      where: {
+        userRole: 'WORKER',
+        state: 'INVITED',
+        tenantId,
+      },
+      select: {
+        id: true,
+        firstName: true,
+        lastName: true,
+        phone: true,
+        bloodGroup: true,
+        govId: true,
+        address: true,
+        email: true,
+        userRole: true,
+        state: true
+      }
+    });
+
+    return {
+      success: true,
+      data: pendingWorkers.map((w: any) => ({
+        ...w,
+        role: w.userRole,
+      }))
+    };
+  }
+
+  @Get(':id')
+  async getById(@Param('id') id: string, @Req() req: any) {
+    const tenantId = tenantScope(req.user).tenantId;
+    const worker = await this.prisma.user.findFirst({
+      where: {
+        id,
+        userRole: 'WORKER',
+        tenantId,
+      },
+      select: {
+        id: true,
+        firstName: true,
+        lastName: true,
+        phone: true,
+        bloodGroup: true,
+        govId: true,
+        address: true,
+        email: true,
+        userRole: true,
+        state: true
+      }
+    });
+
+    if (!worker) {
+      throw new NotFoundException('Worker request not found.');
+    }
+
+    return {
+      success: true,
+      data: {
+        ...worker,
+        role: worker.userRole,
+      }
+    };
+  }
+}

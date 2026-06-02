@@ -1,0 +1,230 @@
+@echo off
+setlocal EnableDelayedExpansion
+title FaceShield Enterprise OS Launcher [v2.0.0-production]
+color 0B
+
+:MENU
+cls
+echo.
+echo    ______             _____ _     _      _     _ 
+echo   ^|  ____^|           / ____^| ^|   (_)    ^| ^|   ^| ^|
+echo   ^| ^|__ __ _  ___ ___ ^| (___ ^| ^|__  _  ___^| ^| __^| ^|
+echo   ^|  __/ _` ^|/ __/ _ \ \___ \^| '_ \^| ^|/ _ \ ^|/ _` ^|
+echo   ^| ^| ^| (_^| ^| (_^|  __/ ____) ^| ^| ^| ^| ^|  __/^| ^| (_^| ^|
+echo   ^|_^|  \__,_^|\___\___^|^|_____/^|_^| ^|_^|_^|\___^|_^|\__,_^|
+echo.
+echo   ==================================================================
+echo                     ENTERPRISE WORKFORCE PLATFORM
+echo                           SYSTEM INITIALIZER
+echo   ==================================================================
+echo.
+echo   [SYSTEM DATE]: %date%
+echo   [SYSTEM TIME]: %time%
+echo.
+echo   [1] Boot Core Infrastructure (Backend API ^& Frontend UI)
+echo   [2] System Override: Terminate Active Ports (3456 ^& 2345)
+echo   [3] Exit Launcher
+echo.
+
+rem Block and wait for single keypress (1, 2, or 3)
+choice /C 123 /N /M "   => Awaiting Command (1-3): "
+
+rem Route according to selected key (checked in descending order)
+if errorlevel 3 goto EOF
+if errorlevel 2 goto TERMINATE_PORTS
+if errorlevel 1 goto START_SYSTEM
+
+echo.
+echo   [ERROR] Invalid command protocol. Rebooting menu...
+ping 127.0.0.1 -n 3 > nul
+goto MENU
+
+:START_SYSTEM
+cls
+cd /d "%~dp0"
+echo   ==================================================================
+echo   [!] INITIATING FACESHIELD SYSTEM BOOT SEQUENCE
+echo   ==================================================================
+echo.
+echo   [%date% %time%] [INFO] Allocating resources and preparing launch...
+ping 127.0.0.1 -n 2 > nul
+
+echo   [%date% %time%] [INFO] [STAGE 1/4] Validating Backend Core (NestJS)...
+cd backend
+if not exist node_modules (
+    echo   [!date! !time!] [WARN] Backend modules missing. Initiating download protocol...
+    call npm install --silent
+    echo   [!date! !time!] [SUCCESS] Backend dependencies installed successfully.
+) else (
+    echo   [!date! !time!] [OK] Backend dependencies verified.
+)
+ping 127.0.0.1 -n 2 > nul
+
+:: ---- DATABASE & CREDENTIAL INITIALIZATION (SEPARATE TERMINAL) ----
+cd ..
+echo   [%date% %time%] [INFO] [STAGE 2/4] Initializing Database Schema (in separate terminal)...
+echo   [%date% %time%] [INFO] [STAGE 3/4] Verifying Environment Connection Secrets (in separate terminal)...
+ping 127.0.0.1 -n 2 > nul
+
+:: Spawning dedicated terminal for DB initialization and env connection testing (no pause on exit)
+start "FaceShield Setup and Verification" /wait cmd /c "color 0E && title FaceShield Setup and Verification && echo [%date% %time%] [INFO] Starting Schema Sync and Keys Test... && cd backend && echo. && echo === [1/3] Syncing Prisma Database Schema === && call npx prisma db push --schema=prisma/schema.prisma && echo. && echo === [2/3] Testing Cloudinary connection via Backend === && call npm run cloudinary:test && echo. && cd .. && echo [SUCCESS] Database and credential verification complete! || (echo. && echo [ERROR] Database/Connection verification failed. Please check credentials. && exit /b 1)"
+
+if errorlevel 1 (
+    echo   [%date% %time%] [ERROR] Verification terminal reported errors. Halting boot sequence.
+    goto MENU
+)
+
+echo.
+echo   [%date% %time%] [INFO] [STAGE 3/5] Validating Frontend Core (Vite/React)...
+cd frontend
+if not exist node_modules (
+    echo   [!date! !time!] [WARN] Frontend modules missing. Initiating download protocol...
+    call npm install --silent
+    echo   [!date! !time!] [SUCCESS] Frontend dependencies installed successfully.
+) else (
+    echo   [!date! !time!] [OK] Frontend dependencies verified.
+)
+ping 127.0.0.1 -n 2 > nul
+
+echo.
+echo   [%date% %time%] [INFO] [STAGE 4/5] Validating Biometrics Core (Python / FastAPI)...
+cd ..
+cd biometrics_service
+
+:: Check if Python is installed
+where python >nul 2>nul
+if !errorlevel! neq 0 (
+    echo   [!date! !time!] [ERROR] Python is not installed or not in system PATH.
+    echo   [!date! !time!] [WARN] Biometrics microservice initialization will be skipped!
+) else (
+    :: Create virtual environment if missing
+    if not exist venv (
+        echo   [!date! !time!] [WARN] Python virtual environment missing. Initiating venv creation...
+        python -m venv venv
+        if !errorlevel! neq 0 (
+            echo   [!date! !time!] [ERROR] Failed to create virtual environment.
+        ) else (
+            echo   [!date! !time!] [SUCCESS] Virtual environment created successfully.
+        )
+    ) else (
+        echo   [!date! !time!] [OK] Virtual environment verified.
+    )
+    
+    :: Install dependencies inside venv
+    if exist venv (
+        echo   [!date! !time!] [INFO] Activating virtual environment and verifying requirements...
+        call venv\Scripts\activate.bat
+        python -m pip install --upgrade pip --quiet
+        pip install -r requirements.txt --quiet
+        if !errorlevel! neq 0 (
+            echo   [!date! !time!] [ERROR] Failed to synchronize Python dependencies.
+        ) else (
+            echo   [!date! !time!] [SUCCESS] Biometrics core dependencies verified and synchronized.
+        )
+        call deactivate
+    )
+)
+cd ..
+ping 127.0.0.1 -n 2 > nul
+
+echo.
+echo   [%date% %time%] [INFO] [STAGE 5/5] Activating Distributed Micro-services...
+ping 127.0.0.1 -n 2 > nul
+
+echo   [%date% %time%] [ACTION] Spinning up Python Biometric OpenCV Engine (Port 8000)...
+start "FaceShield Biometrics [Python]" cmd /c "cd biometrics_service && call start_service.bat <nul"
+
+:: Wait exactly 4 seconds for Python to initialize
+ping 127.0.0.1 -n 5 > nul
+
+echo   [%date% %time%] [ACTION] Spinning up NestJS API Gateway (Port 3456)...
+start "FaceShield Backend [Core]" cmd /c "color 0A && title FaceShield API Gateway [PORT: 3456] && echo [%date% %time%] [INFO] Booting NestJS Backend Engine... && cd backend && npm run start:dev <nul"
+
+:: Wait exactly 5 seconds
+ping 127.0.0.1 -n 6 > nul
+
+echo   [%date% %time%] [ACTION] Spinning up Vite Interactive UI (Port 2345)...
+start "FaceShield Frontend [UI]" cmd /c "color 0D && title FaceShield User Interface [PORT: 2345] && echo [%date% %time%] [INFO] Booting React Client Engine... && cd frontend && npm run dev <nul"
+
+:: Wait exactly 8 seconds
+ping 127.0.0.1 -n 9 > nul
+
+echo   [%date% %time%] [ACTION] Spinning up FaceShield Guard Audit Terminal (Port 5566)...
+start "FaceShield Security Logs [REAL-TIME]" cmd /c "color 0C && title FaceShield Central Guard Audit Terminal [PORT: 5566] && echo [%date% %time%] [INFO] Booting Audit Telemetry Server... && node logs-listener.cjs <nul || pause"
+
+echo.
+echo   [%date% %time%] [INFO] [STAGE 5/5] Finalizing System Checks...
+:: Wait exactly 10 seconds before opening portal tabs
+ping 127.0.0.1 -n 11 > nul
+
+echo.
+echo   ==================================================================
+echo   [SUCCESS] FACESHIELD ENTERPRISE INFRASTRUCTURE IS ONLINE
+echo   ==================================================================
+echo.
+echo   [ROUTING ENDPOINTS]
+    echo    - Client UI:         http://localhost:2345
+    echo    - API Gateway:       http://localhost:3456/api/v1
+    echo    - Biometrics API:    http://localhost:8000/api/biometrics/health
+    echo    - System Docs:       http://localhost:3456/api/docs
+echo.
+echo   [%date% %time%] [ACTION] Launching operational portals in browser automatically...
+echo   [%date% %time%] [ACTION] Launching Swagger Documentation...
+start http://localhost:3456/api/docs
+
+:: Wait exactly 4 seconds
+ping 127.0.0.1 -n 5 > nul
+
+echo   [%date% %time%] [ACTION] Launching Frontend Interface...
+start http://localhost:2345
+
+:: Wait exactly 5 seconds
+ping 127.0.0.1 -n 6 > nul
+
+echo   [%date% %time%] [ACTION] Launching Backend core API...
+start http://localhost:3456/api/v1
+echo.
+echo   [%date% %time%] [INFO] Terminals detached. System running safely in background.
+echo.
+goto MENU
+
+:TERMINATE_PORTS
+cls
+echo   ==================================================================
+echo   [!] INITIATING SYSTEM OVERRIDE: TERMINATING NETWORK SOCKETS
+echo   ==================================================================
+echo.
+echo   [%date% %time%] [INFO] Scanning for rogue processes on ports 3456, 8000, 2345, 5566...
+ping 127.0.0.1 -n 2 > nul
+
+:: ── PRIMARY: Run the dedicated kill-ports.ps1 script (reliable, no escaping issues) ──
+echo   [%date% %time%] [ACTION] Executing port termination script...
+echo.
+powershell -NoProfile -ExecutionPolicy Bypass -File "%~dp0kill-ports.ps1"
+
+:: ── SECONDARY: netstat-based fallback sweep for any stragglers ──
+echo.
+echo   [%date% %time%] [ACTION] Running netstat safety sweep...
+for /f "tokens=5" %%a in ('netstat -ano ^| findstr " :3456 " ^| findstr "LISTENING"') do taskkill /f /pid %%a >nul 2>&1
+for /f "tokens=5" %%a in ('netstat -ano ^| findstr " :2345 " ^| findstr "LISTENING"') do taskkill /f /pid %%a >nul 2>&1
+for /f "tokens=5" %%a in ('netstat -ano ^| findstr " :8000 " ^| findstr "LISTENING"') do taskkill /f /pid %%a >nul 2>&1
+for /f "tokens=5" %%a in ('netstat -ano ^| findstr " :5566 " ^| findstr "LISTENING"') do taskkill /f /pid %%a >nul 2>&1
+
+:: ── TERTIARY: Wipe any orphaned service processes by process name ──
+echo   [%date% %time%] [ACTION] Purging orphaned node.exe, python.exe, uvicorn.exe...
+taskkill /f /im "node.exe" >nul 2>&1
+taskkill /f /im "python.exe" >nul 2>&1
+taskkill /f /im "uvicorn.exe" >nul 2>&1
+
+echo.
+echo   [%date% %time%] [SUCCESS] All FaceShield ports and services terminated.
+echo.
+:: Auto-return to menu after 3 seconds
+ping 127.0.0.1 -n 4 > nul
+goto MENU
+
+:EOF
+echo.
+echo   [%date% %time%] [INFO] Shutting down launcher. Goodbye.
+ping 127.0.0.1 -n 2 > nul
+exit

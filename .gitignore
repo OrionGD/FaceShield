@@ -1,0 +1,133 @@
+# ==========================================
+# FaceShield Monorepo - Git Ignore Configuration
+# ==========================================
+
+# ─── System & OS Metadata ─────────────────
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# ─── IDEs, Editors & Settings ─────────────
+.vscode/
+!.vscode/extensions.json
+!.vscode/launch.json
+.idea/
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+*.swo
+*.swp
+.project
+.classpath
+.settings/
+
+# ─── Dependency Directories ───────────────
+node_modules/
+jspm_packages/
+bower_components/
+
+# ─── Node & Build Outputs ──────────────────
+dist/
+dist-ssr/
+frontend/dist/
+backend/dist/
+build/
+build/Release
+out/
+.next/
+.nuxt/
+.cache/
+.vuepress/dist/
+.serverless/
+.fusebox/
+.tsbuildinfo
+.npm/
+
+# ─── Caches & Linters ─────────────────────
+.eslintcache
+.stylelintcache
+.rpt2_cache/
+.rts2_cache_cjs/
+.rts2_cache_es/
+.rts2_cache_umd/
+.node_repl_history
+*.tgz
+.yarn-integrity
+
+# ─── Logs & Diagnostic Reports ───────────
+logs/
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
+report.[0-9]*.[0-9]*.[0-9]*.[0-9]*.json
+pids/
+*.pid
+*.seed
+*.pid.lock
+
+# ─── Test Coverage & NYC ──────────────────
+coverage/
+*.lcov
+.nyc_output/
+.pytest_cache/
+.vitestcache/
+
+# ─── Secrets & Environment Files ──────────
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+.env.staging.local
+.env.test
+.env.development
+.env.production
+.env.staging
+*.env
+!.env.example
+
+# ─── Local Database Files ──────────────────
+backend/prisma/*.db
+backend/prisma/*.db-journal
+*.db
+*.db-journal
+*.sqlite
+*.sqlite3
+*.sqlite-journal
+.dynamodb/
+
+# ─── Python Biometrics Microservice ───────
+biometrics_service/venv/
+biometrics_service/.venv/
+biometrics_service/__pycache__/
+biometrics_service/*.pyc
+biometrics_service/haarcascade_*.xml
+**/__pycache__/
+**/*.py[cod]
+**/*.egg-info/
+
+# ─── Neural Network Models ────────────────
+biometrics_service/models/
+*.onnx
+
+# ─── Local Development Test Scripts ───────
+test-*.js
+test-*.cjs
+test-*.ts
+inspect_*.js
+inspect_*.ts
+test-roles.http
+
+# ─── Scratch Documents & Artifacts ────────
+implementation_plan.md
+task.md
+walkthrough.md

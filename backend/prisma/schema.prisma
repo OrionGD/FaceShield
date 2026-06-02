@@ -1,0 +1,304 @@
+generator client {
+  provider        = "prisma-client-js"
+  previewFeatures = ["postgresqlExtensions"]
+}
+
+datasource db {
+  provider   = "postgresql"
+  extensions = [pgvector(map: "vector")]
+}
+
+enum Role {
+  PLATFORM_HEAD
+  PLATFORM_ADMIN
+  SUPER_ADMIN
+  ORG_ADMIN
+  HR_ADMIN
+  SUPERVISOR
+  SECURITY_OFFICER
+  VENDOR_MANAGER
+  WORKER
+}
+
+enum WorkerState {
+  INVITED
+  REGISTERED
+  ACTIVE
+  SUSPENDED
+  TERMINATED
+  BLACKLISTED
+}
+
+enum IncidentSeverity {
+  LOW
+  MEDIUM
+  HIGH
+  CRITICAL
+}
+
+model User {
+  id                    String                      @id @default(uuid())
+  roleLevel             Int
+
+  user_id               String                      @unique
+
+  firstName             String?
+  lastName              String?
+
+  email                 String                      @unique
+  password              String
+
+  tenantName            String
+  tenantId              String
+
+  userRole              String
+
+  reportsTo             String?
+
+  state                 String                      @default("ACTIVE")
+
+  faceEmbedding         Unsupported("vector(512)")?
+  fingerprintTemplate   String?
+
+  faceRegistered        Boolean                     @default(false)
+  fingerprintRegistered Boolean                     @default(false)
+
+  biometricEnrolled     Boolean                     @default(false)
+  biometricPending      Boolean                     @default(true)
+  lastBiometricPromptAt DateTime?
+
+  createdAt             DateTime                    @default(now())
+  updatedAt             DateTime                    @updatedAt
+
+  // Additional fields for application features
+  phone                 String?
+  govId                 String?
+  bloodGroup            String?
+  address               String?
+  skillType             String?
+  shiftId               String?
+  vendorId              String?
+  isActive              Boolean                     @default(true)
+  mustChangePassword    Boolean                     @default(false)
+
+  // Relations
+  biometrics            UserBiometrics?             @relation("UserBiometrics")
+  tenant                Tenant?                     @relation(fields: [tenantId], references: [id])
+  vendor                Vendor?                     @relation("VendorWorkers", fields: [vendorId], references: [id])
+  vendorInfo            Vendor?                     @relation("VendorManager")
+  attendance            Attendance[]
+  workerSites           WorkerSite[]
+  incidents             Incident[]
+  boss                  User?                       @relation("ReportsTo", fields: [reportsTo], references: [user_id])
+  subordinates          User[]                      @relation("ReportsTo")
+
+  // Indexes matching the proposed PostgreSQL indexes
+  @@index([userRole], map: "idx_user_role")
+  @@index([tenantId], map: "idx_tenant")
+  @@index([reportsTo], map: "idx_reports_to")
+  @@index([state], map: "idx_state")
+  @@index([tenantId, userRole], map: "idx_tenant_role")
+
+  @@map("users")
+}
+
+model Vendor {
+  id           String   @id @default(uuid())
+  companyName  String
+  contactEmail String
+  contactPhone String?
+  managerId    String   @unique
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  manager User   @relation("VendorManager", fields: [managerId], references: [id])
+  workers User[] @relation("VendorWorkers")
+
+  tenantId String?
+  tenant   Tenant?  @relation(fields: [tenantId], references: [id])
+}
+
+model Site {
+  id             String       @id @default(uuid())
+  name           String
+  latitude       Float
+  longitude      Float
+  radius         Float        @default(25) // meters
+  tenantId       String?
+  tenant         Tenant?       @relation(fields: [tenantId], references: [id])
+  createdAt      DateTime     @default(now())
+  updatedAt      DateTime     @updatedAt
+  workers        WorkerSite[]
+  kiosks         Kiosk[]
+}
+
+model WorkerSite {
+  id         String   @id @default(uuid())
+  workerId   String
+  siteId     String
+  assignedBy String
+  assignedAt DateTime @default(now())
+
+  worker User @relation(fields: [workerId], references: [id])
+  site   Site @relation(fields: [siteId], references: [id])
+
+  tenantId String?
+  tenant   Tenant?  @relation(fields: [tenantId], references: [id])
+
+  @@unique([workerId, siteId])
+}
+
+model Attendance {
+  id         String    @id @default(uuid())
+  userId     String
+  checkIn    DateTime  @default(now())
+  checkOut   DateTime?
+  confidence Float?
+
+  // Geolocation features
+  latitude       Float?
+  longitude      Float?
+  accuracy       Float?
+  distance       Float?
+  withinFence    Boolean @default(false)
+  geofenceStatus String? // "VALID", "VIOLATION", "NO_GPS"
+
+  // Enterprise Features
+  livenessScore    Float?
+  deviceTrustScore Float?
+  finalTrustScore  Float?
+  deviceId         String?
+  kioskId          String?
+
+  tenantId       String?
+  tenant         Tenant?       @relation(fields: [tenantId], references: [id])
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  user User @relation(fields: [userId], references: [id])
+}
+
+model Kiosk {
+  id             String   @id @default(uuid())
+  name           String
+  siteId         String
+  cameraLocation String
+  isActive       Boolean  @default(true)
+  deviceId       String?  @unique
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  site           Site          @relation(fields: [siteId], references: [id])
+  tenantId       String?
+  tenant         Tenant?       @relation(fields: [tenantId], references: [id])
+}
+
+model Shift {
+  id             String   @id @default(uuid())
+  name           String
+  startTime      String // HH:mm
+  endTime        String // HH:mm
+  gracePeriodMin Int      @default(15)
+  isOvernight    Boolean  @default(false)
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  tenantId       String?
+  tenant         Tenant?       @relation(fields: [tenantId], references: [id])
+}
+
+model Incident {
+  id          String           @id @default(uuid())
+  userId      String?
+  type        String // e.g., "SPOOF_ATTEMPT", "LATE_ARRIVAL"
+  severity    IncidentSeverity @default(LOW)
+  description String?
+  createdAt   DateTime         @default(now())
+
+  user           User?         @relation(fields: [userId], references: [id])
+  tenantId       String?
+  tenant         Tenant?       @relation(fields: [tenantId], references: [id])
+}
+
+model Tenant {
+  id                String   @id @default(uuid())
+  name              String
+  slug              String   @unique
+  plan              String   @default("STANDARD")
+  organizationCode  String   @unique
+  organizationType  String?
+  companyEmail      String?
+  companyPhone      String?
+  companyAddress    String?
+  expectedUserCount Int?
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+
+  users       User[]
+  vendors     Vendor[]
+  sites       Site[]
+  workerSites WorkerSite[]
+  attendance  Attendance[]
+  kiosks      Kiosk[]
+  shifts      Shift[]
+  incidents   Incident[]
+}
+
+model OrganizationRequest {
+  id                 String   @id @default(uuid())
+  organizationName   String
+  organizationType   String
+  industry           String
+  organizationSize   String
+  country            String
+  address            String
+  officialWebsite    String?
+  
+  contactName        String
+  contactDesignation String
+  officialEmail      String
+  phone              String
+  
+  requestedServices  String[]
+  expectedUsers      Int
+  branchCount        Int
+  deploymentType     String
+  additionalNotes    String?
+  
+  status             String   @default("PENDING")
+  reviewedBy         String?
+  reviewNotes        String?
+  approvedAt         DateTime?
+  createdAt          DateTime @default(now())
+  updatedAt          DateTime @updatedAt
+
+  @@map("organization_requests")
+}
+
+model UserBiometrics {
+  userId                String   @id @map("user_id")
+  faceRegistered        Boolean  @default(false) @map("face_registered")
+  fingerprintRegistered Boolean  @default(false) @map("fingerprint_registered")
+  fingerprintTemplate   String?  @map("fingerprint_template")
+  updatedAt             DateTime @updatedAt @map("updated_at")
+
+  user                  User     @relation("UserBiometrics", fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("user_biometrics")
+}
+
+model BiometricAuditLog {
+  id         String   @id @default(uuid())
+  userId     String   @map("user_id")
+  action     String   // ENROLL / SKIP / UPDATE
+  timestamp  DateTime @default(now())
+  deviceInfo String?  @map("device_info")
+  ipAddress  String?  @map("ip_address")
+
+  @@map("biometric_audit_log")
+}
+
+// NOTE: AuditLog has been migrated to MongoDB (collection: audit_logs)
+// All audit events are now written via MongoService.logAudit()
+// This keeps PostgreSQL lean — identity/RBAC/workforce only.
