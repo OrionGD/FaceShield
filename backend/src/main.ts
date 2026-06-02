@@ -33,7 +33,7 @@ async function bootstrap() {
   });
 
   app.enableCors({
-    origin: ['http://localhost:2345', 'http://127.0.0.1:2345'], // Frontend origins
+    origin: ['http://localhost:2345', 'http://127.0.0.1:2345', 'https://faceshield-edgeai.netlify.app'], // Frontend origins
     methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
     credentials: true,
   });
@@ -60,7 +60,7 @@ async function bootstrap() {
 
   // Swagger OpenAPI Configuration
   const config = new DocumentBuilder()
-    .setTitle('FenceIn API')
+    .setTitle('FaceShield API')
     .setDescription('The Biometric Workforce Intelligence Enterprise API')
     .setVersion('1.0')
     .addBearerAuth()
