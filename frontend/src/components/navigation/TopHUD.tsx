@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useAuthStore } from '@/store/useAuthStore';
-import { ShieldCheck, Search, Wifi, Activity } from 'lucide-react';
+import { ShieldCheck, Search, Wifi, Activity, Sun, Moon } from 'lucide-react';
 import { useTheme } from '../ThemeContext';
 import { useSocket } from '../SocketContext';
 
@@ -10,7 +10,7 @@ interface TopHUDProps {
 
 export default function TopHUD({ onSearchClick }: TopHUDProps) {
   const { user } = useAuthStore();
-  const { theme } = useTheme();
+  const { theme, toggleTheme } = useTheme();
   const { connectionStatus } = useSocket();
   const [time, setTime] = useState(new Date());
 
@@ -96,6 +96,26 @@ export default function TopHUD({ onSearchClick }: TopHUDProps) {
         <div className="flex items-center space-x-2">
           <Wifi className={`w-3.5 h-3.5 ${wifiColorClass}`} />
           <Activity className="w-3.5 h-3.5 text-brand-500 animate-pulse" />
+          <button
+            onClick={toggleTheme}
+            title={theme === 'dark' ? 'Switch to Light Mode' : 'Switch to Dark Mode'}
+            className="relative w-7 h-7 flex items-center justify-center rounded-full hover:bg-white/10 active:scale-95 transition-all duration-200 group cursor-pointer"
+          >
+            <span className={`absolute transition-all duration-300 ${
+              theme === 'dark'
+                ? 'opacity-100 scale-100 rotate-0'
+                : 'opacity-0 scale-50 rotate-90'
+            }`}>
+              <Moon className="w-3.5 h-3.5 text-brand-300" />
+            </span>
+            <span className={`absolute transition-all duration-300 ${
+              theme === 'light'
+                ? 'opacity-100 scale-100 rotate-0'
+                : 'opacity-0 scale-50 -rotate-90'
+            }`}>
+              <Sun className="w-3.5 h-3.5 text-amber-400" />
+            </span>
+          </button>
           <span className="text-[11px] font-mono font-bold tracking-wider opacity-85">
             {formattedTime}
           </span>
