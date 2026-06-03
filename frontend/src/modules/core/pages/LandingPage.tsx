@@ -333,6 +333,19 @@ export default function LandingPage() {
                       </motion.a>
                     ))}
 
+                    {/* Theme Toggle Button inside the drawer */}
+                    <motion.button
+                      onClick={toggleTheme}
+                      initial={{ opacity: 0, scale: 0.9 }}
+                      animate={{ opacity: 1, scale: 1 }}
+                      transition={{ delay: 0.25 }}
+                      className="px-5 py-2.5 mt-2 bg-bg-secondary/40 hover:bg-bg-hover border border-border-primary/20 hover:border-brand-500/40 text-brand-500/60 hover:text-brand-400 hover:scale-105 active:scale-95 rounded-xl transition-all shadow-[0_0_10px_rgba(13,255,0,0.02)] hover:shadow-[0_0_15px_rgba(13,255,0,0.15)] cursor-pointer flex items-center justify-center gap-2 text-sm font-bold uppercase tracking-wider"
+                      aria-label="Toggle Theme in Menubar"
+                    >
+                      <ShieldCheck className={`w-5 h-5 ${theme === 'light' ? 'text-brand-600' : 'text-brand-500/60'}`} />
+                      <span>{theme === 'light' ? t('Dark Mode') : t('Light Mode')}</span>
+                    </motion.button>
+
                     {/* Divider */}
                     <motion.div
                       initial={{ width: 0 }}
