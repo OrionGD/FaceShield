@@ -15,7 +15,7 @@ if not hasattr(bcrypt, "__about__"):
     about.__version__ = getattr(bcrypt, "__version__", "4.0.0")
     bcrypt.__about__ = about
 
-from fastapi import FastAPI, HTTPException, Body, Request, Depends
+from fastapi import FastAPI, HTTPException, Body, Request, Depends, Response
 from fastapi.responses import JSONResponse
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
@@ -192,10 +192,29 @@ async def on_startup():
 def health_check():
     """Root health check endpoint for Render.com deployment monitoring."""
     return {
-        "status": "ok",
+        "status": "healthy",
         "service": "FaceShield Biometrics Engine",
         "version": "2.0.0"
     }
+
+@app.head("/")
+def health_check_head():
+    """Explicit HEAD route for Render.com deployment monitoring."""
+    return Response(status_code=200)
+
+@app.get("/health")
+def health():
+    """Secondary health check endpoint."""
+    return {
+        "status": "healthy",
+        "service": "FaceShield Biometrics Engine",
+        "version": "2.0.0"
+    }
+
+@app.head("/health")
+def health_head():
+    """Explicit HEAD route for secondary health check endpoint."""
+    return Response(status_code=200)
 
 # AES Encryption/Decryption Helpers for biometric templates (matching NestJS exactly)
 def get_aes_key() -> bytes:
