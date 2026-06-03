@@ -9,6 +9,7 @@ import {
   AlertCircle, Menu, X
 } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
+import { API_BASE } from '@/config/api';
 
 export default function LandingPage() {
   const { t } = useTranslation();
@@ -45,7 +46,7 @@ export default function LandingPage() {
     setOrgRegLoading(true);
 
     try {
-      const res = await fetch('http://localhost:3456/api/v1/auth/request-access', {
+      const res = await fetch(`${API_BASE}/auth/request-access`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'

@@ -5,6 +5,10 @@
 
 [build.environment]
   NODE_VERSION = "20"
+  VITE_API_URL = "https://faceshield-edgeai-backend.onrender.com/api/v1"
+  VITE_BIOMETRICS_URL = "https://faceshield-biometrics.onrender.com/api/v1"
+  VITE_SOCKET_URL = "https://faceshield-edgeai-backend.onrender.com"
+  VITE_TELEMETRY_URL = ""
 
 [[redirects]]
   from   = "/*"

@@ -4,6 +4,7 @@ import { Shield, Mail, Lock, User, Search, Camera, Fingerprint, CheckCircle2, Al
 import { motion, AnimatePresence } from 'framer-motion';
 import Webcam from 'react-webcam';
 import * as faceapi from '@vladmandic/face-api';
+import { BIOMETRICS_BASE } from '@/config/api';
 
 const generateProceduralFingerprint = (name: string): string => {
   const canvas = document.createElement('canvas');
@@ -120,7 +121,7 @@ export default function SignupPage() {
     const fetchVendors = async () => {
       setLoadingVendors(true);
       try {
-        const res = await fetch('http://localhost:8000/api/v1/vendors');
+        const res = await fetch(`${BIOMETRICS_BASE}/vendors`);
         const data = await res.json();
         const list = data.success !== undefined ? data.data : data;
         setVendors(Array.isArray(list) ? list : []);
@@ -352,7 +353,7 @@ export default function SignupPage() {
 
         // Call face enroll endpoint if registered
         if (faceEnrolled && faceImage) {
-          const resFace = await fetch('http://localhost:8000/api/v1/biometrics/enroll', {
+          const resFace = await fetch(`${BIOMETRICS_BASE}/biometrics/enroll`, {
             method: 'POST',
             headers: {
               'Content-Type': 'application/json',
@@ -368,7 +369,7 @@ export default function SignupPage() {
 
         // Call fingerprint enroll endpoint if registered
         if (fingerprintEnrolled && fingerprintImage) {
-          const resFinger = await fetch('http://localhost:8000/api/v1/biometrics/enroll-fingerprint', {
+          const resFinger = await fetch(`${BIOMETRICS_BASE}/biometrics/enroll-fingerprint`, {
             method: 'POST',
             headers: {
               'Content-Type': 'application/json',
@@ -398,7 +399,7 @@ export default function SignupPage() {
           fingerprintImage: fingerprintImage || undefined,
         };
 
-        const res = await fetch('http://localhost:8000/api/v1/auth/register', {
+        const res = await fetch(`${BIOMETRICS_BASE}/auth/register`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify(payload)

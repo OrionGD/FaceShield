@@ -1,8 +1,7 @@
 import { useState, useCallback } from 'react';
 import { useEnrollmentStore } from '../store/enrollment.store';
 import { useAuthStore } from '@/store/useAuthStore';
-
-const BIOMETRICS_BASE = 'http://localhost:8000/api/v1';
+import { BIOMETRICS_BASE } from '@/config/api';
 
 /**
  * useLivenessDetection

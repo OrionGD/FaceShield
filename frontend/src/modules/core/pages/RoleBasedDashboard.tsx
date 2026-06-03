@@ -13,6 +13,7 @@ import { useTheme } from '@/components/ThemeContext';
 import { useTranslation } from 'react-i18next';
 import { terminalLogs, subscribeToTerminalLogs, logFrontendAction } from '@/utils/terminalLogger';
 import type { TerminalLogEntry } from '@/utils/terminalLogger';
+import { API_BASE } from '@/config/api';
 
 export default function RoleBasedDashboard() {
   const { user, token } = useAuthStore();
@@ -65,11 +66,11 @@ export default function RoleBasedDashboard() {
       const authHeaders = { 'Authorization': `Bearer ${token}` };
       try {
         const [wRes, sRes, vRes, dRes, snRes] = await Promise.all([
-          fetch('http://localhost:3456/api/v1/workers', { headers: authHeaders }),
-          fetch('http://localhost:3456/api/v1/sites', { headers: authHeaders }),
-          fetch('http://localhost:3456/api/v1/vendors', { headers: authHeaders }),
-          fetch('http://localhost:3456/api/v1/analytics/dashboard', { headers: authHeaders }),
-          fetch('http://localhost:3456/api/v1/analytics/snapshots', { headers: authHeaders })
+          fetch(`${API_BASE}/workers`, { headers: authHeaders }),
+          fetch(`${API_BASE}/sites`, { headers: authHeaders }),
+          fetch(`${API_BASE}/vendors`, { headers: authHeaders }),
+          fetch(`${API_BASE}/analytics/dashboard`, { headers: authHeaders }),
+          fetch(`${API_BASE}/analytics/snapshots`, { headers: authHeaders })
         ]);
         
         let loadedWorkers: any = [];
@@ -151,8 +152,8 @@ export default function RoleBasedDashboard() {
     setLoadingRequests(true);
     try {
       const [reqRes, analyticsRes] = await Promise.all([
-        fetch('http://localhost:3456/api/v1/platform/organizations', { headers: authHeaders }),
-        fetch('http://localhost:3456/api/v1/platform/analytics', { headers: authHeaders })
+        fetch(`${API_BASE}/platform/organizations`, { headers: authHeaders }),
+        fetch(`${API_BASE}/platform/analytics`, { headers: authHeaders })
       ]);
       if (reqRes.ok) {
         const reqData = await reqRes.json();
@@ -180,7 +181,7 @@ export default function RoleBasedDashboard() {
     setReviewSubmitting(true);
     setReviewError(null);
     try {
-      const res = await fetch('http://localhost:3456/api/v1/platform/review-request', {
+      const res = await fetch(`${API_BASE}/platform/review-request`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -211,7 +212,7 @@ export default function RoleBasedDashboard() {
     setProvisioningLoading(true);
     setReviewError(null);
     try {
-      const res = await fetch('http://localhost:3456/api/v1/platform/provision-tenant', {
+      const res = await fetch(`${API_BASE}/platform/provision-tenant`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -257,7 +258,7 @@ export default function RoleBasedDashboard() {
       const companyName = targetAdmin?.organization || 'Apex Infrastructures';
       const queryPrompt = `You are ${adminName}, the Org Admin of the organization "${companyName}". The Super Admin just sent you a direct message: "${superText}". Write an analytical, brief, realistic reply in character addressing their query. Ground your answer in FenceIN platform context (e.g. active worker monitoring, geofences, liveness check parameters). Keep it within 2 sentences. Do not mention that you are an AI or Llama model.`;
 
-      const response = await fetch('http://localhost:3456/api/v1/ai/query', {
+      const response = await fetch(`${API_BASE}/ai/query`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

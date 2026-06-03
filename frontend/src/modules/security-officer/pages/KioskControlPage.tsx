@@ -5,6 +5,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { useOfflineSync } from '@/hooks/useOfflineSync';
 import { useGeolocation } from '@/hooks/useGeolocation';
 import * as faceapi from '@vladmandic/face-api';
+import { API_BASE } from '@/config/api';
 
 export default function KioskMode() {
   const webcamRef = useRef<Webcam>(null);
@@ -123,7 +124,7 @@ export default function KioskMode() {
         });
         setStatus('success');
       } else {
-        const res = await fetch('http://localhost:3456/api/v1/biometrics/match', {
+        const res = await fetch(`${API_BASE}/biometrics/match`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ email: kioskEmail, image: screenshot })
@@ -135,7 +136,7 @@ export default function KioskMode() {
         const matchedData = data.success !== undefined ? data.data : data;
 
         if (matchedData.matched) {
-          const checkInRes = await fetch('http://localhost:3456/api/v1/attendance/check-in', {
+          const checkInRes = await fetch(`${API_BASE}/attendance/check-in`, {
              method: 'POST',
              headers: { 'Content-Type': 'application/json' },
              body: JSON.stringify({ 

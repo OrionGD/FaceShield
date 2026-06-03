@@ -1,4 +1,4 @@
-const API_BASE = 'http://localhost:3456/api/v1';
+import { API_BASE } from '@/config/api';
 
 export interface EnrollPayload {
   userId: string;

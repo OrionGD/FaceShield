@@ -15,6 +15,7 @@ import Modal from './Modal';
 import { useAuthStore } from '@/store/useAuthStore';
 import * as faceapi from '@vladmandic/face-api';
 import { logFrontendAction } from '@/utils/terminalLogger';
+import { API_BASE, BIOMETRICS_BASE } from '@/config/api';
 // Voltax-style Segmented Radial Arch Gauge Component
 const SegmentedArc = ({ percentage, color = 'rgb(99, 102, 241)', label = 'System Growth' }: { percentage: number, color?: string, label?: string }) => {
   const { t } = useTranslation();
@@ -148,7 +149,7 @@ export default function DynamicRolePage({ pageKey }: DynamicRolePageProps) {
   const refreshEnrollmentStatus = useCallback(async () => {
     if (!user) return;
     try {
-      const res = await fetch(`http://localhost:8000/api/v1/auth/check-enrollment?email=${encodeURIComponent(user.email)}`);
+      const res = await fetch(`${BIOMETRICS_BASE}/auth/check-enrollment?email=${encodeURIComponent(user.email)}`);
       if (res.ok) {
         const data = await res.json();
         setFaceEnrolled(data.faceEnrolled);
@@ -311,7 +312,7 @@ export default function DynamicRolePage({ pageKey }: DynamicRolePageProps) {
       }
       const base64Image = canvas.toDataURL('image/jpeg');
 
-      const res = await fetch('http://localhost:8000/api/v1/biometrics/enroll', {
+      const res = await fetch(`${BIOMETRICS_BASE}/biometrics/enroll`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -372,7 +373,7 @@ export default function DynamicRolePage({ pageKey }: DynamicRolePageProps) {
         const simulatedTemplate = `Procedural_ORB_Minutiae_Ridge_Vector_Seed_${printName.replace(/\s+/g, '_')}_SecureID_${self.crypto.randomUUID()}`;
 
         try {
-          const res = await fetch('http://localhost:8000/api/v1/biometrics/enroll-fingerprint', {
+          const res = await fetch(`${BIOMETRICS_BASE}/biometrics/enroll-fingerprint`, {
             method: 'POST',
             headers: {
               'Content-Type': 'application/json',
@@ -417,7 +418,7 @@ export default function DynamicRolePage({ pageKey }: DynamicRolePageProps) {
   const [isRevokeModalOpen, setIsRevokeModalOpen] = useState(false);
   const handleRevokeBiometrics = async () => {
     try {
-      const res = await fetch('http://localhost:8000/api/v1/biometrics/revoke', {
+      const res = await fetch(`${BIOMETRICS_BASE}/biometrics/revoke`, {
         method: 'POST',
         headers: {
           'Authorization': `Bearer ${token}`
@@ -488,7 +489,7 @@ export default function DynamicRolePage({ pageKey }: DynamicRolePageProps) {
   const fetchChartData = useCallback(async (chartName: string) => {
     if (!token) return;
     try {
-      const res = await fetch(`http://localhost:3456/api/v1/analytics/query?chart=${chartName}`, {
+      const res = await fetch(`${API_BASE}/analytics/query?chart=${chartName}`, {
         headers: { Authorization: `Bearer ${token}` }
       });
       if (res.ok) {
@@ -580,9 +581,9 @@ export default function DynamicRolePage({ pageKey }: DynamicRolePageProps) {
       const authHeaders = { 'Authorization': `Bearer ${token}` };
       try {
         const [wRes, sRes, vRes] = await Promise.all([
-          fetch('http://localhost:3456/api/v1/workers', { headers: authHeaders }),
-          fetch('http://localhost:3456/api/v1/sites', { headers: authHeaders }),
-          fetch('http://localhost:3456/api/v1/vendors', { headers: authHeaders })
+          fetch(`${API_BASE}/workers`, { headers: authHeaders }),
+          fetch(`${API_BASE}/sites`, { headers: authHeaders }),
+          fetch(`${API_BASE}/vendors`, { headers: authHeaders })
         ]);
         if (wRes.ok) {
           const d = await wRes.json();
@@ -615,7 +616,7 @@ export default function DynamicRolePage({ pageKey }: DynamicRolePageProps) {
 
       try {
         if (normalizedKey.includes('USER') || normalizedKey.includes('WORKER_DIRECTORY') || normalizedKey.includes('MY_WORKERS')) {
-          const res = await fetch('http://localhost:3456/api/v1/workers', { headers: authHeaders });
+          const res = await fetch(`${API_BASE}/workers`, { headers: authHeaders });
           if (res.ok) {
             const rawData = await res.json();
             const list = Array.isArray(rawData) ? rawData : (rawData.data && Array.isArray(rawData.data) ? rawData.data : []);
@@ -628,7 +629,7 @@ export default function DynamicRolePage({ pageKey }: DynamicRolePageProps) {
             }));
           }
         } else if (normalizedKey.includes('SITES') || normalizedKey.includes('GEOFENCE')) {
-          const res = await fetch('http://localhost:3456/api/v1/sites', { headers: authHeaders });
+          const res = await fetch(`${API_BASE}/sites`, { headers: authHeaders });
           if (res.ok) {
             const rawData = await res.json();
             const list = Array.isArray(rawData) ? rawData : (rawData.data && Array.isArray(rawData.data) ? rawData.data : []);
@@ -642,7 +643,7 @@ export default function DynamicRolePage({ pageKey }: DynamicRolePageProps) {
             }));
           }
         } else if (normalizedKey.includes('ORGANIZATIONS') || normalizedKey.includes('VENDORS')) {
-          const res = await fetch('http://localhost:3456/api/v1/vendors', { headers: authHeaders });
+          const res = await fetch(`${API_BASE}/vendors`, { headers: authHeaders });
           if (res.ok) {
             const rawData = await res.json();
             const list = Array.isArray(rawData) ? rawData : (rawData.data && Array.isArray(rawData.data) ? rawData.data : []);
@@ -656,7 +657,7 @@ export default function DynamicRolePage({ pageKey }: DynamicRolePageProps) {
             }));
           }
         } else if (normalizedKey.includes('AUDIT') || normalizedKey.includes('LOGS') || normalizedKey.includes('ACTIVITY')) {
-          const res = await fetch('http://localhost:3456/api/v1/analytics/audit-logs', { headers: authHeaders });
+          const res = await fetch(`${API_BASE}/analytics/audit-logs`, { headers: authHeaders });
           if (res.ok) {
             const list = await res.json();
             dbItems = (Array.isArray(list) ? list : []).map((a: any) => ({
@@ -669,7 +670,7 @@ export default function DynamicRolePage({ pageKey }: DynamicRolePageProps) {
             }));
           }
         } else if (normalizedKey.includes('INCIDENT') || normalizedKey.includes('VIOLATION') || normalizedKey.includes('ALERT')) {
-          const res = await fetch('http://localhost:3456/api/v1/analytics/inferences', { headers: authHeaders });
+          const res = await fetch(`${API_BASE}/analytics/inferences`, { headers: authHeaders });
           if (res.ok) {
             const list = await res.json();
             dbItems = (Array.isArray(list) ? list : []).map((i: any) => ({
@@ -682,7 +683,7 @@ export default function DynamicRolePage({ pageKey }: DynamicRolePageProps) {
             }));
           }
         } else if (normalizedKey.includes('KIOSK')) {
-          const res = await fetch('http://localhost:3456/api/v1/sites', { headers: authHeaders });
+          const res = await fetch(`${API_BASE}/sites`, { headers: authHeaders });
           if (res.ok) {
             const list = await res.json();
             dbItems = (Array.isArray(list) ? list : []).map((s: any) => ({
@@ -694,7 +695,7 @@ export default function DynamicRolePage({ pageKey }: DynamicRolePageProps) {
             }));
           }
         } else if (normalizedKey.includes('ROLE') || normalizedKey.includes('PERMISSION')) {
-          const res = await fetch('http://localhost:3456/api/v1/workers', { headers: authHeaders });
+          const res = await fetch(`${API_BASE}/workers`, { headers: authHeaders });
           if (res.ok) {
             const rawData = await res.json();
             const workers = Array.isArray(rawData) ? rawData : (rawData.data && Array.isArray(rawData.data) ? rawData.data : []);
@@ -725,7 +726,7 @@ export default function DynamicRolePage({ pageKey }: DynamicRolePageProps) {
     setIsLoadingDashboard(true);
     setDashboardError(null);
     try {
-      const res = await fetch('http://localhost:3456/api/v1/analytics/dashboard', {
+      const res = await fetch(`${API_BASE}/analytics/dashboard`, {
         headers: { Authorization: `Bearer ${token}` }
       });
       if (res.status === 401 || res.status === 403) {
@@ -799,7 +800,7 @@ export default function DynamicRolePage({ pageKey }: DynamicRolePageProps) {
         const adminEmail = formData.admin || 'admin@org.com';
         
         // 1. Create a corresponding Org Admin worker account first
-        const adminWorkerRes = await fetch('http://localhost:3456/api/v1/workers', {
+        const adminWorkerRes = await fetch(`${API_BASE}/workers`, {
           method: 'POST',
           headers: authHeaders,
           body: JSON.stringify({
@@ -818,7 +819,7 @@ export default function DynamicRolePage({ pageKey }: DynamicRolePageProps) {
         }
 
         // 2. Create the vendor/organization record
-        const res = await fetch('http://localhost:3456/api/v1/vendors', {
+        const res = await fetch(`${API_BASE}/vendors`, {
           method: 'POST',
           headers: authHeaders,
           body: JSON.stringify({
@@ -841,7 +842,7 @@ export default function DynamicRolePage({ pageKey }: DynamicRolePageProps) {
         const lName = nameParts.slice(1).join(' ') || 'Doe';
         const targetRole = formData.role || 'WORKER';
 
-        const res = await fetch('http://localhost:3456/api/v1/workers', {
+        const res = await fetch(`${API_BASE}/workers`, {
           method: 'POST',
           headers: authHeaders,
           body: JSON.stringify({
@@ -864,7 +865,7 @@ export default function DynamicRolePage({ pageKey }: DynamicRolePageProps) {
         const rad = Number(formData.radius) || 150;
         const sName = formData.name || 'HQ Outpost';
 
-        const res = await fetch('http://localhost:3456/api/v1/sites', {
+        const res = await fetch(`${API_BASE}/sites`, {
           method: 'POST',
           headers: authHeaders,
           body: JSON.stringify({
@@ -918,7 +919,7 @@ export default function DynamicRolePage({ pageKey }: DynamicRolePageProps) {
     try {
       const prompt = `You are a security supervisor assistant on the FenceIN dynamic security platform. The active authenticated user is: ${user?.email} (${user?.role}). They asked you this system query: "${userMsg}". Ground your answer in FenceIN platform context (active worker telemetry, geofences, anti-spoof liveness biometric scores, compliance checks). Write a professional, data-centric response. Keep it within 3 sentences. Do not mention that you are an AI or Llama model.`;
 
-      const res = await fetch('http://localhost:3456/api/v1/ai/query', {
+      const res = await fetch(`${API_BASE}/ai/query`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -944,7 +945,7 @@ export default function DynamicRolePage({ pageKey }: DynamicRolePageProps) {
     setScanConfidence(0);
     setScanError(null);
     try {
-      const res = await fetch('http://localhost:8000/api/v1/liveness-status', {
+      const res = await fetch(`${BIOMETRICS_BASE}/liveness-status`, {
         headers: { Authorization: `Bearer ${token}` }
       });
       if (!res.ok) throw new Error(`Liveness service error ${res.status}`);
@@ -970,7 +971,7 @@ export default function DynamicRolePage({ pageKey }: DynamicRolePageProps) {
     setPpeResult(null);
     setPpeError(null);
     try {
-      const res = await fetch('http://localhost:8000/api/v1/ppe-check', {
+      const res = await fetch(`${BIOMETRICS_BASE}/ppe-check`, {
         headers: { Authorization: `Bearer ${token}` }
       });
       if (!res.ok) throw new Error(`PPE service error ${res.status}`);

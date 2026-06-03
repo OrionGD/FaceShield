@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { openDB } from 'idb';
 import type { DBSchema, IDBPDatabase } from 'idb';
 import { encryptData, decryptData } from '../utils/cryptoUtils';
+import { API_BASE } from '@/config/api';
 
 interface FenceInDB extends DBSchema {
   attendance_queue: {
@@ -39,8 +40,8 @@ export function useOfflineSync() {
         const event = await decryptData(encryptedRecord.cipherText, encryptedRecord.iv);
 
         const endpoint = event.type === 'CHECK_IN'
-          ? 'http://localhost:3456/api/v1/attendance/check-in'
-          : `http://localhost:3456/api/v1/attendance/check-out/${event.userId}`;
+          ? `${API_BASE}/attendance/check-in`
+          : `${API_BASE}/attendance/check-out/${event.userId}`;
 
         const method = event.type === 'CHECK_IN' ? 'POST' : 'PUT';
 

@@ -1,6 +1,7 @@
 import { useState, useRef, useMemo } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useAuthStore } from '@/store/useAuthStore';
+import { API_BASE } from '@/config/api';
 import { Plus, MapPin, Search } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { MapContainer, TileLayer, Circle, Popup, Marker } from 'react-leaflet';
@@ -16,7 +17,7 @@ export default function SitesView() {
   const { data: sites, isLoading } = useQuery({
     queryKey: ['sites'],
     queryFn: async () => {
-      const res = await fetch('http://localhost:3456/api/v1/sites', {
+      const res = await fetch(`${API_BASE}/sites`, {
         headers: { Authorization: `Bearer ${token}` }
       });
       if (!res.ok) throw new Error('Failed to fetch');
@@ -26,7 +27,7 @@ export default function SitesView() {
 
   const createSite = useMutation({
     mutationFn: async (data: any) => {
-      const res = await fetch('http://localhost:3456/api/v1/sites', {
+      const res = await fetch(`${API_BASE}/sites`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
         body: JSON.stringify({

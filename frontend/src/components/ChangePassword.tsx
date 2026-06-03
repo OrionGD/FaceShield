@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { useAuthStore } from '../store/useAuthStore';
 import { Lock, Loader2, CheckCircle2, AlertCircle, ShieldAlert } from 'lucide-react';
 import { motion } from 'framer-motion';
+import { BIOMETRICS_BASE } from '@/config/api';
 
 interface ChangePasswordProps {
   forceMode?: boolean;
@@ -34,7 +35,7 @@ export default function ChangePassword({ forceMode = false, onSuccess }: ChangeP
     setLoading(true);
 
     try {
-      const res = await fetch('http://localhost:8000/api/v1/auth/change-password', {
+      const res = await fetch(`${BIOMETRICS_BASE}/auth/change-password`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

@@ -6,6 +6,7 @@ import { Lock, User, Loader2, CheckCircle2, AlertCircle, Fingerprint, Shield, Ca
 import { motion, AnimatePresence } from 'framer-motion';
 import Webcam from 'react-webcam';
 import * as faceapi from '@vladmandic/face-api';
+import { BIOMETRICS_BASE } from '@/config/api';
 
 const generateProceduralFingerprint = (name: string): string => {
   const canvas = document.createElement('canvas');
@@ -91,7 +92,7 @@ export default function Login() {
     let active = true;
     const loadPresets = async () => {
       try {
-        const res = await fetch('http://localhost:8000/api/v1/auth/users');
+        const res = await fetch(`${BIOMETRICS_BASE}/auth/users`);
         if (res.ok && active) {
           const data = await res.json();
           setPresetProfiles(data);
@@ -169,7 +170,7 @@ export default function Login() {
     let active = true;
     const checkStatus = async () => {
       try {
-        let url = 'http://localhost:8000/api/v1/auth/check-enrollment';
+        let url = `${BIOMETRICS_BASE}/auth/check-enrollment`;
         if (fingerprintSimName === 'custom') {
           if (!customFingerprintName.trim()) {
             setIsSimProfileEnrolled(false);
@@ -226,8 +227,8 @@ export default function Login() {
 
     const isDirect = authMode === 'direct_face';
     const url = isDirect 
-      ? 'http://localhost:8000/api/v1/auth/face-login' 
-      : 'http://localhost:8000/api/v1/biometrics/verify';
+      ? `${BIOMETRICS_BASE}/auth/face-login` 
+      : `${BIOMETRICS_BASE}/biometrics/verify`;
 
     const headers: Record<string, string> = {
       'Content-Type': 'application/json',
@@ -397,8 +398,8 @@ export default function Login() {
           const printImg = generateProceduralFingerprint(nameToUse);
 
           const url = isDirect
-            ? 'http://localhost:8000/api/v1/auth/fingerprint-login'
-            : 'http://localhost:8000/api/v1/biometrics/verify-fingerprint';
+            ? `${BIOMETRICS_BASE}/auth/fingerprint-login`
+            : `${BIOMETRICS_BASE}/biometrics/verify-fingerprint`;
 
           const headers: Record<string, string> = {
             'Content-Type': 'application/json',
@@ -497,7 +498,7 @@ export default function Login() {
     setFingerprintProgress(0);
 
     try {
-      const res = await fetch('http://localhost:8000/api/v1/auth/login', {
+      const res = await fetch(`${BIOMETRICS_BASE}/auth/login`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email, password }),

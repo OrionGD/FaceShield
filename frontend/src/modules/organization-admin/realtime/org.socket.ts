@@ -7,7 +7,7 @@ import { io, Socket } from 'socket.io-client';
 import { useOrgAdminStore } from '../store/org-admin.store';
 import type { AttendanceRecord, KioskDevice } from '../types';
 
-const SOCKET_URL = import.meta.env.VITE_API_URL || 'http://localhost:3456';
+import { SOCKET_URL } from '@/config/api';
 
 let socket: Socket | null = null;
 

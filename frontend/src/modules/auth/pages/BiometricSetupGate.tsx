@@ -6,6 +6,7 @@ import { Camera, Fingerprint, Shield, AlertCircle, CheckCircle2, Loader2, Info }
 import { motion } from 'framer-motion';
 import Webcam from 'react-webcam';
 import * as faceapi from '@vladmandic/face-api';
+import { API_BASE } from '@/config/api';
 
 const generateProceduralFingerprint = (name: string): string => {
   const canvas = document.createElement('canvas');
@@ -167,7 +168,7 @@ export default function BiometricSetupGate() {
         throw new Error('Webcam screenshot capture returned null.');
       }
 
-      const res = await fetch('http://localhost:3456/api/v1/biometrics/face/register', {
+      const res = await fetch(`${API_BASE}/biometrics/face/register`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -229,7 +230,7 @@ export default function BiometricSetupGate() {
           const userName = (user?.firstName || 'User') + ' ' + (user?.lastName || '');
           const printImg = generateProceduralFingerprint(userName);
 
-          const res = await fetch('http://localhost:3456/api/v1/biometrics/fingerprint/register', {
+          const res = await fetch(`${API_BASE}/biometrics/fingerprint/register`, {
             method: 'POST',
             headers: {
               'Content-Type': 'application/json',
@@ -288,7 +289,7 @@ export default function BiometricSetupGate() {
     setError('');
 
     try {
-      const res = await fetch('http://localhost:3456/api/v1/biometrics/skip', {
+      const res = await fetch(`${API_BASE}/biometrics/skip`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

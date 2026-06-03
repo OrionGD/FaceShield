@@ -2,7 +2,7 @@ import React, { createContext, useContext, useEffect, useState } from 'react';
 import { io, Socket } from 'socket.io-client';
 import { useAuthStore } from '../store/useAuthStore';
 
-const SOCKET_URL = import.meta.env.VITE_API_URL || 'http://localhost:3456';
+import { SOCKET_URL } from '@/config/api';
 
 export type ConnectionStatus = 'connected' | 'disconnected' | 'connecting' | 'error';
 

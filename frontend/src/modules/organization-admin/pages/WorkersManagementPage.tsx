@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useAuthStore } from '@/store/useAuthStore';
+import { API_BASE } from '@/config/api';
 import { Users, Plus, Search, Edit2, Trash2, MapPin } from 'lucide-react';
 import { motion } from 'framer-motion';
 import Modal from '@/components/Modal';
@@ -18,7 +19,7 @@ export default function WorkersView() {
   const { data: workers, isLoading } = useQuery({
     queryKey: ['workers'],
     queryFn: async () => {
-      const res = await fetch('http://localhost:3456/api/v1/workers', {
+      const res = await fetch(`${API_BASE}/workers`, {
         headers: { Authorization: `Bearer ${token}` }
       });
       if (!res.ok) throw new Error('Failed to fetch');
@@ -29,7 +30,7 @@ export default function WorkersView() {
   const { data: sites } = useQuery({
     queryKey: ['sites'],
     queryFn: async () => {
-      const res = await fetch('http://localhost:3456/api/v1/sites', {
+      const res = await fetch(`${API_BASE}/sites`, {
         headers: { Authorization: `Bearer ${token}` }
       });
       if (!res.ok) return [];
@@ -40,7 +41,7 @@ export default function WorkersView() {
   const createOrUpdateWorker = useMutation({
     mutationFn: async (data: any) => {
       const isEditing = !!editingWorker;
-      const endpoint = isEditing ? `http://localhost:3456/api/v1/workers/${editingWorker.id}` : 'http://localhost:3456/api/v1/workers';
+      const endpoint = isEditing ? `${API_BASE}/workers/${editingWorker.id}` : `${API_BASE}/workers`;
       const method = isEditing ? 'PUT' : 'POST';
       
       const payload = { ...data };
@@ -64,7 +65,7 @@ export default function WorkersView() {
 
   const deleteWorker = useMutation({
     mutationFn: async (id: string) => {
-      const res = await fetch(`http://localhost:3456/api/v1/workers/${id}`, {
+      const res = await fetch(`${API_BASE}/workers/${id}`, {
         method: 'DELETE',
         headers: { Authorization: `Bearer ${token}` }
       });
@@ -75,7 +76,7 @@ export default function WorkersView() {
 
   const assignSiteMutation = useMutation({
     mutationFn: async (data: { workerId: string, siteId: string }) => {
-      const res = await fetch('http://localhost:3456/api/v1/sites/assign', {
+      const res = await fetch(`${API_BASE}/sites/assign`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
         body: JSON.stringify(data)

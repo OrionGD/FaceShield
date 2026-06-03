@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useAuthStore } from '@/store/useAuthStore';
+import { API_BASE } from '@/config/api';
 import { Building2, Plus, Search, Edit2, Trash2, Link } from 'lucide-react';
 import { motion } from 'framer-motion';
 import Modal from '@/components/Modal';
@@ -15,7 +16,7 @@ export default function VendorsView() {
   const { data: vendors, isLoading } = useQuery({
     queryKey: ['vendors'],
     queryFn: async () => {
-      const res = await fetch('http://localhost:3456/api/v1/vendors', {
+      const res = await fetch(`${API_BASE}/vendors`, {
         headers: { Authorization: `Bearer ${token}` }
       });
       if (!res.ok) throw new Error('Failed to fetch');
@@ -26,7 +27,7 @@ export default function VendorsView() {
   const { data: managers } = useQuery({
     queryKey: ['vendor-managers'],
     queryFn: async () => {
-      const res = await fetch('http://localhost:3456/api/v1/workers', {
+      const res = await fetch(`${API_BASE}/workers`, {
         headers: { Authorization: `Bearer ${token}` }
       });
       const data = await res.json();
@@ -38,7 +39,7 @@ export default function VendorsView() {
   const createOrUpdateVendor = useMutation({
     mutationFn: async (data: any) => {
       const isEditing = !!editingVendor;
-      const endpoint = isEditing ? `http://localhost:3456/api/v1/vendors/${editingVendor.id}` : 'http://localhost:3456/api/v1/vendors';
+      const endpoint = isEditing ? `${API_BASE}/vendors/${editingVendor.id}` : `${API_BASE}/vendors`;
       const method = isEditing ? 'PUT' : 'POST';
       
       const res = await fetch(endpoint, {
@@ -59,7 +60,7 @@ export default function VendorsView() {
 
   const deleteVendor = useMutation({
     mutationFn: async (id: string) => {
-      const res = await fetch(`http://localhost:3456/api/v1/vendors/${id}`, {
+      const res = await fetch(`${API_BASE}/vendors/${id}`, {
         method: 'DELETE',
         headers: { Authorization: `Bearer ${token}` }
       });

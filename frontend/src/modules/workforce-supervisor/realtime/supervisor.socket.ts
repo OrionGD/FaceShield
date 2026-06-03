@@ -7,7 +7,7 @@ import { io, Socket } from 'socket.io-client';
 import { useSupervisorStore } from '../store/supervisor.store';
 import type { LiveWorker, IncidentReport } from '../types';
 
-const SOCKET_URL = import.meta.env.VITE_API_URL || 'http://localhost:3456';
+import { SOCKET_URL } from '@/config/api';
 
 let socket: Socket | null = null;
 

@@ -1,3 +1,5 @@
+import { TELEMETRY_URL } from '@/config/api';
+
 export interface TerminalLogEntry {
   timestamp: string;
   user: string;
@@ -25,14 +27,16 @@ export const logFrontendAction = (action: string, email?: string, role?: string)
 
   const entry: TerminalLogEntry = { timestamp, user: userStr, action };
   
-  // Stream to dedicated background terminal server
-  fetch('http://localhost:5566/log', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(entry)
-  }).catch(() => {
-    // Suppress errors silently if telemetry server is offline
-  });
+  // Stream to dedicated background terminal server (skip in production if URL is empty)
+  if (TELEMETRY_URL) {
+    fetch(`${TELEMETRY_URL}/log`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(entry)
+    }).catch(() => {
+      // Suppress errors silently if telemetry server is offline
+    });
+  }
 
   terminalLogs.push(entry);
 
