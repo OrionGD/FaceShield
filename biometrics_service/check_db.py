@@ -37,3 +37,4 @@ if row:
 cur.execute("SELECT atttypmod FROM pg_attribute WHERE attrelid = '\"User\"'::regclass AND attname = 'faceEmbedding';")
 print("atttypmod:", cur.fetchone())
 conn.close()
+ 

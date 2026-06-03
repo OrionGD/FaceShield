@@ -29,3 +29,4 @@ export const registerWorker = async (payload: any) => {
     };
   }
 };
+ 

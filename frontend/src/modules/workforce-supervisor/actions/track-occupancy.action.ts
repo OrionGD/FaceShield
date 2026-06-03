@@ -29,3 +29,4 @@ export const trackOccupancy = async (payload: any) => {
     };
   }
 };
+ 

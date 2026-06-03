@@ -19,3 +19,4 @@ src/modules/auth/pages/LoginPage.tsx
 src\components\DynamicRolePage.tsx
 src\modules\core\pages\LandingPage.tsx
 src\modules\auth\pages\LoginPage.tsx
+ 

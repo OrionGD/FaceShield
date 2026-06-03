@@ -7,3 +7,4 @@ import { AiController } from './ai.controller';
   controllers: [AiController],
 })
 export class AiModule {}
+ 

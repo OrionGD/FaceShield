@@ -68,3 +68,4 @@ export default function LivenessIndicator({ liveness, checking }: LivenessIndica
     </div>
   );
 }
+ 

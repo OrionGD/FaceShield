@@ -24,3 +24,4 @@ export class AiController {
     return this.aiService.askAi(dto.query, req.user.userId, req.user.tenantId ?? null);
   }
 }
+ 

@@ -320,3 +320,4 @@ def analyze_antispoof(face_img: np.ndarray) -> Dict[str, Any]:
         },
         "confidence_pct": int(composite * 100),
     }
+ 

@@ -64,3 +64,4 @@ export const useHrAdminStore = create<HrAdminState>((set) => ({
       ),
     })),
 }));
+ 

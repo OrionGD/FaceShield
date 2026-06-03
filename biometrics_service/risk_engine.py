@@ -317,3 +317,4 @@ def get_continuous_monitor_queue(tenant_id: str, sample_size: int = 5) -> List[s
             return []
         finally:
             c.close()
+ 

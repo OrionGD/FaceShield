@@ -50,3 +50,4 @@ export interface SurveillanceLog {
   details: string;
   timestamp: string;
 }
+ 

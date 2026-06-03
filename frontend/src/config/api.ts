@@ -41,3 +41,4 @@ export const SOCKET_URL = cleanUrl(
 /** Terminal telemetry logger (dev-only, silently fails in production) */
 export const TELEMETRY_URL = import.meta.env.VITE_TELEMETRY_URL || '';
 
+ 

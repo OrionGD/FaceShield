@@ -29,3 +29,4 @@ export const configureGeofence = async (payload: any) => {
     };
   }
 };
+ 

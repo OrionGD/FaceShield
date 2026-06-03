@@ -78,3 +78,4 @@ export default function FaceQualityIndicator({ quality }: FaceQualityIndicatorPr
     </div>
   );
 }
+ 

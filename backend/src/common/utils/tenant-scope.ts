@@ -37,3 +37,4 @@ export function tenantScope(reqOrUserOrContext: any) {
     tenantId,
   };
 }
+ 

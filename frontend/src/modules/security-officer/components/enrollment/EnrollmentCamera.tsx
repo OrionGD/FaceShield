@@ -34,3 +34,4 @@ export default function EnrollmentCamera({ webcamRef, onFrame, isActive }: Enrol
     </div>
   );
 }
+ 

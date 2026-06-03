@@ -95,3 +95,4 @@ export interface Subscription {
   nextBillingDate: string;
   workerSeats: number;
 }
+ 

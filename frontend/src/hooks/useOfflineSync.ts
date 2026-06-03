@@ -118,3 +118,4 @@ export function useOfflineSync() {
 
   return { isOnline, pendingSyncs, queueAttendance, syncQueue };
 }
+ 

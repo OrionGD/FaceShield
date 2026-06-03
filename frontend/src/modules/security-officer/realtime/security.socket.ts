@@ -72,3 +72,4 @@ export function emitSecurityAction(event: string, payload: any) {
   }
   socket.emit(event, payload);
 }
+ 

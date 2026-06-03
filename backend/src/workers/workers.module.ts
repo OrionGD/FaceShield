@@ -8,3 +8,4 @@ import { WorkerRequestsController } from './worker-requests.controller';
   controllers: [WorkersController, WorkerRequestsController]
 })
 export class WorkersModule {}
+ 

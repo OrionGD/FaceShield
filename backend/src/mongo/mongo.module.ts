@@ -39,3 +39,4 @@ import { Telemetry, TelemetrySchema } from './schemas/telemetry.schema';
   exports: [MongoService, MongooseModule],
 })
 export class MongoModule {}
+ 

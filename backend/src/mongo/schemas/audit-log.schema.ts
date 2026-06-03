@@ -37,3 +37,4 @@ export const AuditLogSchema = SchemaFactory.createForClass(AuditLog);
 // Index for fast user-based queries and time-range lookups
 AuditLogSchema.index({ tenantId: 1, userId: 1, createdAt: -1 });
 AuditLogSchema.index({ tenantId: 1, action: 1, createdAt: -1 });
+ 

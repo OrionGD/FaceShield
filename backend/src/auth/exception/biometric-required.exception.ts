@@ -5,3 +5,4 @@ export class BiometricRequiredException extends ForbiddenException {
     super(message);
   }
 }
+ 

@@ -129,3 +129,4 @@ def match_fingerprints(desc1: np.ndarray, desc2: np.ndarray, threshold: int = 18
         }
     except Exception as e:
         return {"matched": False, "score": 0.0, "good_matches": 0, "reason": f"Matcher error: {str(e)}"}
+ 

@@ -48,3 +48,4 @@ export const api = {
   patch: (url: string, data?: any, config?: any) => request(url, 'PATCH', data, config),
   delete: (url: string, config?: any) => request(url, 'DELETE', undefined, config),
 };
+ 

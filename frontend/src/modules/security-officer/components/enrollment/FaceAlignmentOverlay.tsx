@@ -53,3 +53,4 @@ export default function FaceAlignmentOverlay({ quality }: FaceAlignmentOverlayPr
     </div>
   );
 }
+ 

@@ -248,3 +248,4 @@ export class AttendanceService {
     return await workbook.xlsx.writeBuffer();
   }
 }
+ 

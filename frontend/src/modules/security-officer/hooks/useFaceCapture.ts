@@ -92,3 +92,4 @@ export const useFaceCapture = (webcamRef: React.RefObject<any>) => {
     captureFrame
   };
 };
+ 

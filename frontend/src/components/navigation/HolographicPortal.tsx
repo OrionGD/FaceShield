@@ -293,3 +293,4 @@ export default function HolographicPortal({ isOpen, onClose }: HolographicPortal
     </AnimatePresence>
   );
 }
+ 

@@ -64,3 +64,4 @@ export function emitManualAttendance(payload: { workerId: string; type: 'CHECK_I
   if (!socket?.connected) return;
   socket.emit('attendance:manual', payload);
 }
+ 

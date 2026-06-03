@@ -5,3 +5,4 @@ export class AiQueryDto {
   @IsNotEmpty()
   query!: string;
 }
+ 

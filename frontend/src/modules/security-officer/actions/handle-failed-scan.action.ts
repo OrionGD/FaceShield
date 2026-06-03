@@ -29,3 +29,4 @@ export const handleFailedScan = async (payload: any) => {
     };
   }
 };
+ 

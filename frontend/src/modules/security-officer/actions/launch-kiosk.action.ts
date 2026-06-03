@@ -29,3 +29,4 @@ export const launchKiosk = async (payload: any) => {
     };
   }
 };
+ 

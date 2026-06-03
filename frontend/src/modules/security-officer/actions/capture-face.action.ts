@@ -4,3 +4,4 @@ export const captureFaceAction = (webcamRef: React.RefObject<Webcam | null>): st
   if (!webcamRef.current) return null;
   return webcamRef.current.getScreenshot() || null;
 };
+ 

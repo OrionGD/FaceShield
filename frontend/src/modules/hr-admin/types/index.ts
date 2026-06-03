@@ -68,3 +68,4 @@ export interface OvertimeRecord {
   approvedBy?: string;
   status: 'PENDING' | 'APPROVED' | 'REJECTED' | 'PAID';
 }
+ 

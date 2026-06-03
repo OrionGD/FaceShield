@@ -76,3 +76,4 @@ export class IdentifyByFingerprintDto {
   image!: string;
 }
 
+ 

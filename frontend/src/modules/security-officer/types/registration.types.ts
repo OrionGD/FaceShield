@@ -39,3 +39,4 @@ export interface WorkerRegistrationResponse {
   corporateEmail?: string;
   temporaryPassword?: string;
 }
+ 

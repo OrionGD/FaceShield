@@ -48,3 +48,4 @@ export default function RoleRoute({ allowedRoles }: RoleRouteProps) {
 
   return <Outlet />;
 }
+ 

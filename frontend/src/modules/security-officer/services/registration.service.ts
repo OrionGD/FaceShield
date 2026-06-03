@@ -37,3 +37,4 @@ export const registrationService = {
     return mapped;
   }
 };
+ 

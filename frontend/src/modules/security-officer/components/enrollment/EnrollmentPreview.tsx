@@ -47,3 +47,4 @@ export default function EnrollmentPreview({ frame, onRetake, onSubmit, loading }
     </div>
   );
 }
+ 

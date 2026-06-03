@@ -56,3 +56,4 @@ export class AnalyticsSnapshot {
 export const AnalyticsSnapshotSchema = SchemaFactory.createForClass(AnalyticsSnapshot);
 AnalyticsSnapshotSchema.index({ tenantId: 1, period: 1, bucket: 1 }, { unique: true });
 AnalyticsSnapshotSchema.index({ createdAt: -1 });
+ 

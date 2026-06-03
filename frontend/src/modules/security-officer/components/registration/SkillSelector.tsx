@@ -33,3 +33,4 @@ export default function SkillSelector({ value, onChange, error }: SkillSelectorP
     </div>
   );
 }
+ 

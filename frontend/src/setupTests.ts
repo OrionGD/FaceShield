@@ -18,3 +18,4 @@ Object.defineProperty(window, 'crypto', {
 
 // Mock Canvas / WebRTC for Kiosk tests
 HTMLCanvasElement.prototype.getContext = () => null;
+ 

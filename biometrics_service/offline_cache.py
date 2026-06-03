@@ -417,3 +417,4 @@ def cosine_similarity_offline(query_embedding: list, tenant_id: str) -> List[Dic
 
     results.sort(key=lambda x: x["confidence"], reverse=True)
     return results
+ 

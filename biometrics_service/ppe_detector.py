@@ -258,3 +258,4 @@ def check_ppe_compliance(
         "required":          required_ppe,
         "recommendation":    recommendation,
     }
+ 

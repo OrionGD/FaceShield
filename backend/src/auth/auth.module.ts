@@ -32,3 +32,4 @@ import { BiometricsModule } from '../biometrics/biometrics.module';
   exports: [AuthService, JwtModule],
 })
 export class AuthModule {}
+ 

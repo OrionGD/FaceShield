@@ -314,3 +314,4 @@ def init_known_devices_table():
         conn.close()
     except Exception as e:
         print(f"[TrustEngine] Device table init error: {e}")
+ 

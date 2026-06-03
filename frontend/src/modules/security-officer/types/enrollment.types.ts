@@ -24,3 +24,4 @@ export interface EnrollmentState {
   embedding: number[] | null;
   error: string | null;
 }
+ 

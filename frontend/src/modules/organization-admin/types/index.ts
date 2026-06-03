@@ -97,3 +97,4 @@ export interface KioskDevice {
   totalScansToday: number;
   failedScansToday: number;
 }
+ 

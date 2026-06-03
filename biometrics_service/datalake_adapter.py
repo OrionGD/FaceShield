@@ -435,3 +435,4 @@ def export_all_pending(limit: int = 10000) -> List[Dict[str, Any]]:
     except Exception as e:
         print(f"[DatalakeAdapter] Export error: {e}")
     return events
+ 

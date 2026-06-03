@@ -2292,3 +2292,4 @@ def system_overview(userId: str = Depends(get_current_user_id)):
         },
         "network_mode": "ONLINE" if datalake_status["reachable"] else "OFFLINE",
     }
+ 

@@ -33,3 +33,4 @@ export class AiChat {
 
 export const AiChatSchema = SchemaFactory.createForClass(AiChat);
 AiChatSchema.index({ tenantId: 1, userId: 1, createdAt: -1 });
+ 

@@ -11,3 +11,4 @@ export class AssignWorkerDto {
   @IsString() workerId!: string;
   @IsString() siteId!: string;
 }
+ 

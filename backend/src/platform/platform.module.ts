@@ -8,3 +8,4 @@ import { AnalyticsModule } from '../analytics/analytics.module';
   controllers: [PlatformController],
 })
 export class PlatformModule {}
+ 

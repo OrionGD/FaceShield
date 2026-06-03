@@ -101,3 +101,4 @@ The frontend is a Vite application.
   *(Ensure your local `.env` has your database URL configured before running this).*
 - [ ] **CORS**: Ensure your NestJS backend allows Cross-Origin requests (CORS) from your new Vercel frontend URL.
 - [ ] **Custom Domains**: You can add custom domains in both Vercel (for frontend) and Render (for backend/biometrics) through their respective settings panels.
+ 

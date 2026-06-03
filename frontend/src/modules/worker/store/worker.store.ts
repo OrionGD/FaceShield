@@ -62,3 +62,4 @@ export const useWorkerStore = create<WorkerState>((set) => ({
   addAttendance: (record) =>
     set((state) => ({ attendance: [record, ...state.attendance] })),
 }));
+ 

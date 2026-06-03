@@ -62,3 +62,4 @@ export const useOrgAdminStore = create<OrgAdminState>((set) => ({
       attendance: [record, ...state.attendance],
     })),
 }));
+ 

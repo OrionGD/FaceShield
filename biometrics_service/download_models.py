@@ -23,3 +23,4 @@ def download_file(url, dest_path):
 if __name__ == "__main__":
     download_file(ULTRAFACE_URL, os.path.join(MODELS_DIR, "version-RFB-320.onnx"))
     download_file(ARCFACE_URL, os.path.join(MODELS_DIR, "arcface.onnx"))
+ 

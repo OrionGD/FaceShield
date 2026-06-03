@@ -52,3 +52,4 @@ export const AiInferenceLogSchema = SchemaFactory.createForClass(AiInferenceLog)
 AiInferenceLogSchema.index({ tenantId: 1, userId: 1, createdAt: -1 });
 AiInferenceLogSchema.index({ tenantId: 1, method: 1, outcome: 1 });
 AiInferenceLogSchema.index({ createdAt: -1 });
+ 

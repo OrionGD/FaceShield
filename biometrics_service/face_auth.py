@@ -302,3 +302,4 @@ def verify_face_embeddings(emb1: list, emb2: list, threshold: float = 0.55) -> d
         "threshold": threshold,
         "reason": "Success" if matched else "Facial profile mismatch"
     }
+ 

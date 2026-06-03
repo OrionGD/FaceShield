@@ -13,3 +13,4 @@ foreach ($port in $ports) {
 }
 Write-Host ""
 Write-Host "All ports cleared. Safe to restart services."
+ 

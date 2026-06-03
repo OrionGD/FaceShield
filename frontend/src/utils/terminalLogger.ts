@@ -46,3 +46,4 @@ export const logFrontendAction = (action: string, email?: string, role?: string)
 
   subscribers.forEach((cb) => cb(entry));
 };
+ 

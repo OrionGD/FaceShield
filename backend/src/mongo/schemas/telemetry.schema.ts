@@ -42,3 +42,4 @@ TelemetrySchema.index({ tenantId: 1, source: 1, event: 1, createdAt: -1 });
 TelemetrySchema.index({ createdAt: -1 });
 // TTL: auto-delete raw telemetry after 30 days
 TelemetrySchema.index({ createdAt: 1 }, { expireAfterSeconds: 60 * 60 * 24 * 30 });
+ 

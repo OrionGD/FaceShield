@@ -754,3 +754,4 @@ export class AnalyticsService {
     return this.getAiChatHistory(tenantId, targetUserId as any, limit);
   }
 }
+ 

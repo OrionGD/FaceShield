@@ -302,3 +302,4 @@ model BiometricAuditLog {
 // NOTE: AuditLog has been migrated to MongoDB (collection: audit_logs)
 // All audit events are now written via MongoService.logAudit()
 // This keeps PostgreSQL lean — identity/RBAC/workforce only.
+ 
