@@ -43,7 +43,7 @@ async function bootstrap() {
   });
 
   app.enableCors({
-    origin: ['http://localhost:2345', 'http://127.0.0.1:2345', 'https://faceshield-edgeai.netlify.app'], // Frontend origins
+    origin: ['http://localhost:2345', 'http://127.0.0.1:2345', 'https://faceshield-edgeai.vercel.app'], // Frontend origins
     methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
     credentials: true,
   });

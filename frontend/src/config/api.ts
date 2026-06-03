@@ -2,7 +2,7 @@
  * Centralized API configuration.
  *
  * In development the Vite dev server talks to local services.
- * In production (Netlify build) the env vars point to Render URLs.
+ * In production (Vercel build) the env vars point to Render URLs.
  *
  * Vite exposes env vars that start with VITE_ via import.meta.env.
  */

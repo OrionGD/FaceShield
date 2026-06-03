@@ -131,3 +131,6 @@ test-roles.http
 implementation_plan.md
 task.md
 walkthrough.md
+
+# ─── Vercel Deployment ─────────────────────
+.vercel/

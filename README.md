@@ -73,7 +73,7 @@ The script will automatically:
 
 ## ☁️ Deployment
 
-For detailed instructions on deploying the full stack (Netlify + Render), please refer to the [Deployment Guide](./guide.md).
+For detailed instructions on deploying the full stack (Vercel + Render), please refer to the [Deployment Guide](./guide.md).
 
 ---
 

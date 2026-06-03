@@ -2,7 +2,7 @@
 
 This guide provides step-by-step instructions to deploy the Faceshield system across cloud platforms. 
 Based on your project structure, the recommended approach is:
-- **Frontend** (Vite/React) -> **Netlify**
+- **Frontend** (Vite/React) -> **Vercel**
 - **Backend** (NestJS) -> **Render** (Web Service)
 - **Biometrics Service** (Python) -> **Render** (Web Service)
 - **Database** (PostgreSQL) -> **Supabase** (With pgvector support)
@@ -13,7 +13,7 @@ Based on your project structure, the recommended approach is:
 
 1. Create a [GitHub](https://github.com/) repository and push your entire `Faceshield` project to it.
 2. Create an account on [Render](https://render.com/).
-3. Create an account on [Netlify](https://www.netlify.com/).
+3. Create an account on [Vercel](https://vercel.com/).
 4. Create a project on [Supabase](https://supabase.com/).
 
 ---
@@ -74,22 +74,21 @@ The biometrics service is a Python application.
 
 ---
 
-## 5. Frontend Deployment (Netlify)
+## 5. Frontend Deployment (Vercel)
 
 The frontend is a Vite application.
 
-1. Go to your **Netlify Dashboard** and click **Add new site** -> **Import an existing project**.
-2. Select **GitHub** and authorize Netlify.
-3. Choose your `Faceshield` repository.
-4. Configure the build settings:
-   - **Base directory**: `frontend`
-   - **Build command**: `npm run build`
-   - **Publish directory**: `frontend/dist`
-5. Click **Add environment variables**:
-   - `VITE_API_URL`: Paste the URL of your **Backend Web Service** (e.g., `https://faceshield-backend.onrender.com`).
+1. Go to your **Vercel Dashboard** and click **Add New** -> **Project**.
+2. Select **GitHub** and authorize/import your `Faceshield` repository.
+3. In the project configuration screen:
+   - Set **Framework Preset** to **Vite**.
+   - Set **Root Directory** to `frontend`.
+   - Vercel will automatically configure the build command (`npm run build`) and output directory (`dist`).
+4. Expand the **Environment Variables** section and add:
+   - `VITE_API_URL`: Paste the URL of your Centralized NestJS Backend Web Service (e.g., `https://faceshield-backend.onrender.com`).
    - Add any other variables from your `frontend/.env`.
-6. Click **Deploy site**.
-7. Netlify will build and deploy your frontend. Once finished, you will receive a public Netlify URL where your users can access the Faceshield application!
+5. Click **Deploy**.
+6. Vercel will build and deploy your frontend. Once finished, you will receive a public Vercel URL (e.g., `https://faceshield-edgeai.vercel.app`) where your users can access the Faceshield application!
 
 ---
 
@@ -100,5 +99,5 @@ The frontend is a Vite application.
   npx prisma db push
   ```
   *(Ensure your local `.env` has your database URL configured before running this).*
-- [ ] **CORS**: Ensure your NestJS backend allows Cross-Origin requests (CORS) from your new Netlify frontend URL.
-- [ ] **Custom Domains**: You can add custom domains in both Netlify (for frontend) and Render (for backend/biometrics) through their respective settings panels.
+- [ ] **CORS**: Ensure your NestJS backend allows Cross-Origin requests (CORS) from your new Vercel frontend URL.
+- [ ] **Custom Domains**: You can add custom domains in both Vercel (for frontend) and Render (for backend/biometrics) through their respective settings panels.
