@@ -24,9 +24,19 @@ async function bootstrap() {
   app.use(urlencoded({ extended: true, limit: '50mb' }));
   
   // Intercept and resolve /favicon.ico requests gracefully with 204 No Content
+  // Also handle root health check for Render.com (probes GET / and HEAD /)
   app.use((req: any, res: any, next: any) => {
     if (req.originalUrl === '/favicon.ico') {
       res.status(204).end();
+      return;
+    }
+    if (req.originalUrl === '/' && (req.method === 'GET' || req.method === 'HEAD')) {
+      res.status(200).json({
+        status: 'ok',
+        service: 'FaceShield EdgeAI Backend',
+        version: '1.0.0',
+        timestamp: new Date().toISOString(),
+      });
       return;
     }
     next();

@@ -187,6 +187,16 @@ async def on_startup():
 
     threading.Thread(target=_bg_sync, daemon=True).start()
 
+# ── Health Check (Render probes GET / and HEAD /) ──────────────────────────────
+@app.get("/")
+def health_check():
+    """Root health check endpoint for Render.com deployment monitoring."""
+    return {
+        "status": "ok",
+        "service": "FaceShield Biometrics Engine",
+        "version": "2.0.0"
+    }
+
 # AES Encryption/Decryption Helpers for biometric templates (matching NestJS exactly)
 def get_aes_key() -> bytes:
     jwt_secret = os.environ.get("JWT_SECRET")
