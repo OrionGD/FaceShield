@@ -20,7 +20,7 @@ import { Telemetry, TelemetrySchema } from './schemas/telemetry.schema';
           console.warn('[MongoModule] ⚠️  MONGO_URI not set — MongoDB features disabled.');
         }
         return {
-          uri: uri || 'mongodb://localhost:27017/fencein_fallback',
+          uri: uri || 'mongodb://mongodb-dummy-host:27017/fencein_fallback',
           dbName: 'fencein',
           serverSelectionTimeoutMS: 5000,
           connectTimeoutMS: 10000,

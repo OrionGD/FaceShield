@@ -10,12 +10,14 @@ import {
 } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { API_BASE } from '@/config/api';
+import { useTheme } from '@/components/ThemeContext';
 
 export default function LandingPage() {
   const { t } = useTranslation();
   const [loading, setLoading] = useState(true);
   const [menuOpen, setMenuOpen] = useState(false);
   const navigate = useNavigate();
+  const { theme, toggleTheme } = useTheme();
 
   // Onboarding Form States
   const [requestForm, setRequestForm] = useState({
@@ -261,7 +263,13 @@ export default function LandingPage() {
               <div className="max-w-7xl mx-auto px-6 py-4 flex justify-between items-center relative">
                 {/* Left balanced spacer / subtle icon */}
                 <div className="w-12 h-12 flex items-center justify-start">
-                  <ShieldCheck className="w-6 h-6 text-brand-500/40" />
+                  <button
+                    onClick={toggleTheme}
+                    className="p-2 bg-bg-secondary/40 hover:bg-bg-hover border border-border-primary/20 hover:border-brand-500/40 text-brand-500/60 hover:text-brand-400 hover:scale-105 active:scale-95 rounded-xl transition-all shadow-[0_0_10px_rgba(13,255,0,0.02)] hover:shadow-[0_0_15px_rgba(13,255,0,0.15)] cursor-pointer"
+                    aria-label="Toggle Theme"
+                  >
+                    <ShieldCheck className={`w-6 h-6 ${theme === 'light' ? 'text-brand-600' : 'text-brand-500/60'}`} />
+                  </button>
                 </div>
 
                 {/* Centered Term Logo */}

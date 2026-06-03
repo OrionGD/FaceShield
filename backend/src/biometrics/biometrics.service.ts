@@ -39,7 +39,7 @@ const FACE_DUPLICATE_CONFIDENCE_THRESHOLD = 0.82;
 
 async function callPythonBiometrics(path: string, payload: any): Promise<any | null> {
   try {
-    const baseUrl = process.env.BIOMETRICS_SERVICE_URL || 'http://127.0.0.1:8000';
+    const baseUrl = process.env.BIOMETRICS_SERVICE_URL || 'https://faceshield-biometrics.onrender.com';
     const response = await fetch(`${baseUrl}/api/biometrics${path}`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },

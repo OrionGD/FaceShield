@@ -15,7 +15,7 @@ import { BIOMETRICS_BASE } from '@/config/api';
  * - The backend invalidates the nonce on first use (8-second TTL)
  * - Replaying a previously captured frame will be rejected with HTTP 400
  *
- * Source: Python FastAPI biometrics engine @ localhost:8000
+ * Source: Python FastAPI biometrics engine
  * Security scope: Security Officer, enrollment-only context
  */
 export const useLivenessDetection = () => {

@@ -20,7 +20,16 @@ import { ConfigService } from '@nestjs/config';
  */
 @WebSocketGateway({
   cors: {
-    origin: ['http://localhost:2345', 'http://127.0.0.1:2345'],
+    origin: (origin: string, callback: (err: Error | null, allow?: boolean) => void) => {
+      const allowedOrigins = process.env.ALLOWED_ORIGINS
+        ? process.env.ALLOWED_ORIGINS.split(',')
+        : ['https://face-shield-snowy.vercel.app', 'https://faceshield-edgeai.vercel.app'];
+      if (!origin || allowedOrigins.includes(origin)) {
+        callback(null, true);
+      } else {
+        callback(new Error('Not allowed by CORS'));
+      }
+    },
     credentials: true,
   },
 })

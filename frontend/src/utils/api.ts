@@ -1,6 +1,20 @@
 import { useAuthStore } from '@/store/useAuthStore';
 
-const BASE_URL = import.meta.env.VITE_API_URL || 'https://faceshield-edgeai-backend.onrender.com/api/v1';
+const cleanUrl = (url: string | undefined, defaultPath: string, fallback: string): string => {
+  const resolved = url || fallback;
+  if (!resolved) return '';
+  const clean = resolved.replace(/\/+$/, '');
+  if (!clean.endsWith('/api/v1') && defaultPath) {
+    return `${clean}${defaultPath}`;
+  }
+  return clean;
+};
+
+const BASE_URL = cleanUrl(
+  import.meta.env.VITE_API_URL,
+  '/api/v1',
+  'https://faceshield-edgeai-backend.onrender.com'
+);
 
 async function request(url: string, method: string, data?: any, config?: any) {
   const token = useAuthStore.getState().token;

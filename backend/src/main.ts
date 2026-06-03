@@ -42,8 +42,12 @@ async function bootstrap() {
     next();
   });
 
+  const allowedOrigins = process.env.ALLOWED_ORIGINS
+    ? process.env.ALLOWED_ORIGINS.split(',')
+    : ['https://face-shield-snowy.vercel.app', 'https://faceshield-edgeai.vercel.app'];
+
   app.enableCors({
-    origin: ['http://localhost:2345', 'http://127.0.0.1:2345', 'https://faceshield-edgeai.vercel.app'], // Frontend origins
+    origin: allowedOrigins,
     methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
     credentials: true,
   });
