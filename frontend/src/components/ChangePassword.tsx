@@ -71,7 +71,7 @@ export default function ChangePassword({ forceMode = false, onSuccess }: ChangeP
   return (
     <div className={`w-full max-w-md mx-auto ${forceMode ? 'p-8 bg-slate-900 border border-brand-500/30 shadow-[0_0_80px_rgba(13,255,0,0.15)] rounded-3xl backdrop-blur-2xl' : 'p-6 bg-slate-900/50 border border-slate-800 rounded-2xl'}`}>
       <div className="text-center mb-6">
-        <div className={`mx-auto w-12 h-12 rounded-xl flex items-center justify-center mb-4 ${forceMode ? 'bg-brand-500/10 border border-brand-500/20 text-brand-400' : 'bg-brand-500/10 border border-brand-500/20 text-brand-400'}`}>
+        <div className={`mx-auto w-12 h-12 rounded-xl flex items-center justify-center mb-4 ${forceMode ? 'bg-red-500/10 border border-red-500/20 text-red-400' : 'bg-brand-500/10 border border-brand-500/20 text-brand-400'}`}>
           {forceMode ? <ShieldAlert className="w-6 h-6 animate-pulse" /> : <Lock className="w-6 h-6" />}
         </div>
         <h2 className="text-2xl font-black text-white font-papyrus uppercase tracking-wide">

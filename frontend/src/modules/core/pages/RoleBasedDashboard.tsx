@@ -15,6 +15,21 @@ import { terminalLogs, subscribeToTerminalLogs, logFrontendAction } from '@/util
 import type { TerminalLogEntry } from '@/utils/terminalLogger';
 import { API_BASE } from '@/config/api';
 
+// Safe property access helpers to avoid prototype pollution warnings
+function safeGet<T>(obj: Record<string, T>, key: string): T | undefined {
+  if (!obj || !key || key === '__proto__' || key === 'constructor' || key === 'prototype') {
+    return undefined;
+  }
+  return obj[key];
+}
+
+function safeSet<T>(obj: Record<string, T>, key: string, value: T): void {
+  if (!obj || !key || key === '__proto__' || key === 'constructor' || key === 'prototype') {
+    return;
+  }
+  obj[key] = value;
+}
+
 export default function RoleBasedDashboard() {
   const { user, token } = useAuthStore();
   const { theme } = useTheme();
@@ -122,18 +137,18 @@ export default function RoleBasedDashboard() {
         const vendMap: Record<string, any[]> = {};
 
         admins.forEach((adm: any) => {
-          geoMap[adm.email] = sites.map((s: any) => ({
+          safeSet(geoMap, adm.email, sites.map((s: any) => ({
             id: s.id.substring(0, 8).toUpperCase(),
             name: s.name,
             radius: `${s.radius}m`,
             status: 'Active'
-          }));
-          vendMap[adm.email] = vendors.map((v: any) => ({
+          })));
+          safeSet(vendMap, adm.email, vendors.map((v: any) => ({
             id: v.id.substring(0, 8).toUpperCase(),
             name: v.companyName,
             category: 'Industrial Contracting',
             status: 'Active'
-          }));
+          })));
         });
 
         setGeofencesData(geoMap);
@@ -446,7 +461,7 @@ export default function RoleBasedDashboard() {
     }
   };
 
-  const config = roleConfigs[user.role] || {
+  const config = safeGet(roleConfigs, user.role) || {
     title: 'Welcome to FenceIn',
     subtitle: 'Access restricted or role undefined.',
     basePath: '/',
@@ -946,7 +961,7 @@ export default function RoleBasedDashboard() {
 
               {/* Chat Messages Panel */}
               <div className="flex-1 overflow-y-auto space-y-3 pr-2 mb-4 scrollbar-none text-xs font-semibold">
-                {(adminChats[selectedAdminEmail] || []).map((msg, i) => (
+                {(safeGet(adminChats, selectedAdminEmail) || []).map((msg, i) => (
                   <div key={i} className={`flex ${msg.sender === 'super' ? 'justify-end' : 'justify-start'}`}>
                     <div className="max-w-[75%] flex flex-col">
                       <div className={`rounded-xl px-4 py-2.5 border ${
@@ -1012,7 +1027,7 @@ export default function RoleBasedDashboard() {
                       : 'bg-transparent border-brand-500/10 text-brand-400 hover:border-brand-500/30'
                   }`}
                 >
-                  View Geofences ({geofencesData[selectedAdminEmail]?.length || 0})
+                  View Geofences ({safeGet(geofencesData, selectedAdminEmail)?.length || 0})
                 </button>
                 <button 
                   onClick={() => setAssetTab('vendors')}
@@ -1022,7 +1037,7 @@ export default function RoleBasedDashboard() {
                       : 'bg-transparent border-brand-500/10 text-brand-400 hover:border-brand-500/30'
                   }`}
                 >
-                  View Vendors ({vendorsData[selectedAdminEmail]?.length || 0})
+                  View Vendors ({safeGet(vendorsData, selectedAdminEmail)?.length || 0})
                 </button>
               </div>
             </div>
@@ -1040,7 +1055,7 @@ export default function RoleBasedDashboard() {
                     </tr>
                   </thead>
                   <tbody>
-                    {(geofencesData[selectedAdminEmail] || []).map((geo) => (
+                    {(safeGet(geofencesData, selectedAdminEmail) || []).map((geo) => (
                       <tr key={geo.id} className="border-b border-brand-500/10 hover:bg-brand-950/20 transition-colors">
                         <td className="py-4 font-mono font-bold text-brand-400">{geo.id}</td>
                         <td className="py-4 font-bold">{geo.name}</td>
@@ -1067,7 +1082,7 @@ export default function RoleBasedDashboard() {
                     </tr>
                   </thead>
                   <tbody>
-                    {(vendorsData[selectedAdminEmail] || []).map((vnd) => (
+                    {(safeGet(vendorsData, selectedAdminEmail) || []).map((vnd) => (
                       <tr key={vnd.id} className="border-b border-brand-500/10 hover:bg-brand-950/20 transition-colors">
                         <td className="py-4 font-mono font-bold text-brand-400">{vnd.id}</td>
                         <td className="py-4 font-bold">{vnd.name}</td>
