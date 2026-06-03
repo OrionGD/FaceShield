@@ -56,7 +56,7 @@ The backend is a Node.js/NestJS application using Prisma.
 
 ## 4. Biometrics Service Deployment (Render)
 
-The biometrics service is a Python application.
+The biometrics service is a Python FastAPI application.
 
 1. Go to your **Render Dashboard** and click **New +** -> **Web Service**.
 2. Connect the same GitHub repository.
@@ -68,9 +68,13 @@ The biometrics service is a Python application.
    - **Start Command**: `uvicorn app:app --host 0.0.0.0 --port $PORT`
 4. Scroll down to **Environment Variables** and add:
    - `DATABASE_URL`: Paste the same **Supabase Session Pooler URL**.
-   - Add any necessary keys from your local `biometrics_service/.env`.
+   - `JWT_SECRET`: Ensure this matches the `JWT_SECRET` used in your NestJS backend.
+   - Add any other necessary keys from your local `biometrics_service/.env`.
 5. Click **Create Web Service**.
-6. Once deployed, note down the URL. Ensure the NestJS backend's environment variables are updated with this new URL (`BIOMETRICS_SERVICE_URL`) so they can communicate.
+6. Once deployed, note down the URL (e.g., `https://faceshield-biometrics.onrender.com`). Ensure the NestJS backend's environment variables are updated with this new URL (`BIOMETRICS_SERVICE_URL`) so they can communicate.
+
+> [!NOTE]
+> **Automated Health Checks**: Render automatically performs health checks on the root path `/` using a `HEAD` request. The Biometrics Service is pre-configured with explicit `HEAD /` and `GET /health` handlers to ensure the Render health check passes with a `200 OK` status and the service is successfully declared live.
 
 ---
 
@@ -99,6 +103,14 @@ The frontend is a Vite application.
   npx prisma db push
   ```
   *(Ensure your local `.env` has your database URL configured before running this).*
-- [ ] **CORS**: Ensure your NestJS backend allows Cross-Origin requests (CORS) from your new Vercel frontend URL.
+- [ ] **Verify Biometrics Health**: Check if the biometrics service is responding correctly by visiting your deployed root URL (e.g., `https://faceshield-biometrics.onrender.com/`). It should return:
+  ```json
+  {
+    "status": "healthy",
+    "service": "FaceShield Biometrics Engine",
+    "version": "2.0.0"
+  }
+  ```
+- [ ] **CORS Settings**: Ensure your NestJS backend allows Cross-Origin requests (CORS) from your new Vercel frontend URL.
 - [ ] **Custom Domains**: You can add custom domains in both Vercel (for frontend) and Render (for backend/biometrics) through their respective settings panels.
  
